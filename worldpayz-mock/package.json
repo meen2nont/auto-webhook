@@ -1,0 +1,22 @@
+{
+  "name": "worldpayz-mock",
+  "version": "1.0.0",
+  "description": "Mock Worldpayz payment API server for integration testing.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "smoke": "node smoke-test.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.13.6",
+    "express": "^4.18.2",
+    "sqlite3": "^6.0.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}

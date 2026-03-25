@@ -1,0 +1,2862 @@
+{
+  "info": {
+    "_postman_id": "0dca8e32-e0a4-42ee-83c6-c2b3367f9701",
+    "name": "PayoneX Api - Online Payment Service",
+    "description": "We are a Payment Gateway service provider. If you want to connect your payments. We are ready to serve you with full efficiency. You can read the Document here for connection. Accept our system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "23895912"
+  },
+  "item": [
+    {
+      "name": "Authenication",
+      "item": [
+        {
+          "name": "Get Token generate",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accessKey\": \"aa6f90f9-c5c9-4cb5-ac59-b502f80d89e6\",\n  \"secretKey\": \"777cb628-a875-4e66-b197-c5416a51bf35\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.payonex.asia/authenticate",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "authenticate"
+              ]
+            },
+            "description": "First method need to get token to use for another method you can get accessKey and secretKey from your admin portal and the key expired you can use in 24 hour.\n\n| Field | Type | Description |\n| --- | --- | --- |\n| accessKey | string | key generate in back office |\n| secretKey | string | key generate in back office |"
+          },
+          "response": [
+            {
+              "name": "success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accessKey\": \"<string>\",\n  \"secretKey\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/authenticate",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "authenticate"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"token\": \"<string>\"\n  }\n}"
+            },
+            {
+              "name": "no auth",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"accessKey\": \"19c14b45-4d85-4089-a5f0-7f17d70030fd\",\n    \"secretKey\": \"68fd3a63-8915-48e9-b304-ba023330a2cea\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/authenticate",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "authenticate"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Wed, 17 Sep 2025 07:46:35 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "62"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "x-amzn-RequestId",
+                  "value": "965161f9-bd5b-4e47-8145-15f270f9716a"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Access-Control-Allow-Headers",
+                  "value": "*"
+                },
+                {
+                  "key": "x-amz-apigw-id",
+                  "value": "RCUWUHM7SQ0ENbA="
+                },
+                {
+                  "key": "Access-Control-Allow-Methods",
+                  "value": "*"
+                },
+                {
+                  "key": "X-Amzn-Trace-Id",
+                  "value": "Root=1-68ca675b-3228783002d82a945d88a4ab;Parent=5f69d28a56133ca9;Sampled=0;Lineage=1:24d7bf0f:0"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": false,\n    \"code\": \"40502\",\n    \"data\": \"Credential not found\"\n}"
+            },
+            {
+              "name": "error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"accessKey\": \"<string>\",\n  \"secretKey\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/authenticate",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "authenticate"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ],
+      "description": "#### **Before you connect to our API, you need to config ip whitelist and generate accesskey secretkey to connect with us.**"
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "Create Customers V2",
+          "request": {
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}",
+                  "type": "string"
+                },
+                {
+                  "key": "key",
+                  "value": "Authorization",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \n    \"name\" : \"น.ส. มะลิดา กิ่งเมือง\",\n    \"bankCode\": \"KBANK\", \n    \"accountNo\": \"2041057028\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.payonex.asia/v2/customers",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "v2",
+                "customers"
+              ]
+            },
+            "description": "This is the part of managing your customer accounts. Before you make a deposit/withdrawal with Payonex, you need to create a Customer account on our system before financial transactions can be made. on our system\n\nTo create customer information to PAYONEX platform that we will use customer uuid as a reference for another functions related to that customer\n\n| Field | Type | Description |\n| --- | --- | --- |\n| name | string | Customer's account name |\n| bankCode | string | Customer's bank (see bank codes below) |\n| accountNo | string | Customer's account number |"
+          },
+          "response": [
+            {
+              "name": "Create customer success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \n    \"name\" : \"<string>\",\n    \"bankCode\": \"<string>\", \n    \"accountNo\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/v2/customers",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "v2",
+                    "customers"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"partner\": \"<string>\",\n    \"customerUuid\": \"<string>\",\n    \"clientCode\": \"<string>\",\n    \"name\": \"<string>\",\n    \"searchName\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"accountNo\": \"<string>\",\n    \"bankCode\": \"<string>\",\n    \"status\": \"SUCCESS\",\n    \"createdAt\": \"<number>\",\n    \"updatedAt\": \"<number>\"\n  }\n}"
+            },
+            {
+              "name": "No authorization or invalid input or failed condition",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \n    \"name\" : \"<string>\",\n    \"bankCode\": \"<string>\", \n    \"accountNo\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/v2/customers",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "v2",
+                    "customers"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\"\n}"
+            },
+            {
+              "name": "System error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \n    \"name\" : \"<string>\",\n    \"bankCode\": \"<string>\", \n    \"accountNo\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/v2/customers",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "v2",
+                    "customers"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Update customer status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJraWQiOiJWYjRvS3NrSGxLNjBBUHhtcFFvYVltTW8zWDhGNGdEeDN3eDdTM2hLcWl3PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJhOThhNGFjMy1hNTBjLTQ1YzktOWQxOC1iZDg1ZGRhNjJhNDgiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfQUdPbWIwekc1IiwiY29nbml0bzp1c2VybmFtZSI6ImFhNmY5MGY5LWM1YzktNGNiNS1hYzU5LWI1MDJmODBkODllNiIsImN1c3RvbTpwYXJ0bmVyIjoiUEFZT05FWCIsImN1c3RvbTpzZWN1cmUiOiIyMjMuMjA2LjIyMy4xNjQiLCJvcmlnaW5fanRpIjoiMGFjOWE1ZDctZGZjMi00NmU2LTg4ZTUtODk5ZDJhNjkxYzA0IiwiYXVkIjoiOHRuN2JyMXN2Y2poZGdjYWQ3amVsNGdiciIsImV2ZW50X2lkIjoiNDU3MzgwZDItYzQ2OS00YjgxLWIxZWItMWE5NjEyYTg5OGFiIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NzI4MDc2ODYsImN1c3RvbTpjbGllbnRDb2RlIjoiSFVBWVRFRU5VSSIsImV4cCI6MTc3Mjg5NDA4NiwiY3VzdG9tOnJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MjgwNzY4NiwianRpIjoiNjMyYzYwM2MtNWE1Yi00MGI3LWIzZmMtMjhkODk4YWU3OTIwIn0.aghLUTG1wqmM3AowffmUi3iuZUezBOJDbtXSUopBnJwtPG9-6aLHnicDLq8BR5w46pH5owgfqgitFu0drKgu2qaYdwf1cu4hvujmC9EihtiI6GOMoP0MJvyxvqEcgdGqc8TJibeQPgllRhPreK-QU6Uqma9LjFG8ll01hmfsTektZrmRa90NhGM3NCBgTTlXluVWJPT1MANXC6eL9pwOaMxx0dZhQC0J4Un1Q8KVEEKWTpCzXPd-0NrE1av4xS4jKuq1QTSgxbsc9kLOFoG35PbPaVPNI2WrS2OggLnAOmxzPulegmyKzMdfQ65pDeh8nMtgvU0tpGLQRPpJp2Gdqg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SUCCESS\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.payonex.asia/customers/:uuid/status",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "customers",
+                ":uuid",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "uuid",
+                  "value": "76a16b01-5209-4a49-be0a-5836842b1d93",
+                  "description": "(Required) Customer uuid"
+                }
+              ]
+            },
+            "description": "To create customer information to PAYONEX platform that we will use customer uuid as a reference for another functions related to that customer\n\n| Field | Type | **Value** | Description |\n| --- | --- | --- | --- |\n| status | string | SUCCESS | For customers will be able to deposit - withdraw easily. |\n|  |  | BLOCK | For customers, deposits and withdrawals cannot be made. |"
+          },
+          "response": [
+            {
+              "name": "Create customer success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"SUCCESS\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/customers/:uuid/status",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "customers",
+                    ":uuid",
+                    "status"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"partner\": \"<string>\",\n    \"customerUuid\": \"<string>\",\n    \"clientCode\": \"<string>\",\n    \"name\": \"<string>\",\n    \"searchName\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"accountNo\": \"<string>\",\n    \"bankCode\": \"<string>\",\n    \"status\": \"SUCCESS\",\n    \"createdAt\": \"<number>\",\n    \"updatedAt\": \"<number>\"\n  }\n}"
+            },
+            {
+              "name": "No authorization or invalid input or failed condition",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"SUCCESS\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/customers/:uuid/status",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "customers",
+                    ":uuid",
+                    "status"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\"\n}"
+            },
+            {
+              "name": "System error",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"SUCCESS\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/customers/:uuid/status",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "customers",
+                    ":uuid",
+                    "status"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Update customer account information",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJraWQiOiJWYjRvS3NrSGxLNjBBUHhtcFFvYVltTW8zWDhGNGdEeDN3eDdTM2hLcWl3PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJhOThhNGFjMy1hNTBjLTQ1YzktOWQxOC1iZDg1ZGRhNjJhNDgiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfQUdPbWIwekc1IiwiY29nbml0bzp1c2VybmFtZSI6ImFhNmY5MGY5LWM1YzktNGNiNS1hYzU5LWI1MDJmODBkODllNiIsImN1c3RvbTpwYXJ0bmVyIjoiUEFZT05FWCIsImN1c3RvbTpzZWN1cmUiOiIyMjMuMjA2LjIyMy4xNjQiLCJvcmlnaW5fanRpIjoiMGFjOWE1ZDctZGZjMi00NmU2LTg4ZTUtODk5ZDJhNjkxYzA0IiwiYXVkIjoiOHRuN2JyMXN2Y2poZGdjYWQ3amVsNGdiciIsImV2ZW50X2lkIjoiNDU3MzgwZDItYzQ2OS00YjgxLWIxZWItMWE5NjEyYTg5OGFiIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NzI4MDc2ODYsImN1c3RvbTpjbGllbnRDb2RlIjoiSFVBWVRFRU5VSSIsImV4cCI6MTc3Mjg5NDA4NiwiY3VzdG9tOnJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MjgwNzY4NiwianRpIjoiNjMyYzYwM2MtNWE1Yi00MGI3LWIzZmMtMjhkODk4YWU3OTIwIn0.aghLUTG1wqmM3AowffmUi3iuZUezBOJDbtXSUopBnJwtPG9-6aLHnicDLq8BR5w46pH5owgfqgitFu0drKgu2qaYdwf1cu4hvujmC9EihtiI6GOMoP0MJvyxvqEcgdGqc8TJibeQPgllRhPreK-QU6Uqma9LjFG8ll01hmfsTektZrmRa90NhGM3NCBgTTlXluVWJPT1MANXC6eL9pwOaMxx0dZhQC0J4Un1Q8KVEEKWTpCzXPd-0NrE1av4xS4jKuq1QTSgxbsc9kLOFoG35PbPaVPNI2WrS2OggLnAOmxzPulegmyKzMdfQ65pDeh8nMtgvU0tpGLQRPpJp2Gdqg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \n    \"name\" : \"ปริวรรต ลาภสาร\",\n    \"bankCode\": \"KBANK\", \n    \"accountNo\": \"0968924583\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.payonex.asia/v2/customers/:uuid",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "v2",
+                "customers",
+                ":uuid"
+              ],
+              "variable": [
+                {
+                  "key": "uuid",
+                  "value": "76a16b01-5209-4a49-be0a-5836842b1d93"
+                }
+              ]
+            },
+            "description": "To create customer information to PAYONEX platform that we will use customer uuid as a reference for another functions related to that customer\n\n| Field | Type | Description |\n| --- | --- | --- |\n| name | string | Customer's account name |\n| bankCode | string | Customer's bank (see bank codes below) |\n| accountNo | string | Customer's account number |"
+          },
+          "response": [
+            {
+              "name": "Create customer success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \n    \"name\" : \"<string>\",\n    \"bankCode\": \"<string>\", \n    \"accountNo\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/v2/customers/:uuid",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "v2",
+                    "customers",
+                    ":uuid"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"partner\": \"<string>\",\n    \"customerUuid\": \"<string>\",\n    \"clientCode\": \"<string>\",\n    \"name\": \"<string>\",\n    \"searchName\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"accountNo\": \"<string>\",\n    \"bankCode\": \"<string>\",\n    \"status\": \"SUCCESS\",\n    \"createdAt\": \"<number>\",\n    \"updatedAt\": \"<number>\"\n  }\n}"
+            },
+            {
+              "name": "No authorization or invalid input or failed condition",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \n    \"name\" : \"<string>\",\n    \"bankCode\": \"<string>\", \n    \"accountNo\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/v2/customers/:uuid",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "v2",
+                    "customers",
+                    ":uuid"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\"\n}"
+            },
+            {
+              "name": "System error",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \n    \"name\" : \"<string>\",\n    \"bankCode\": \"<string>\", \n    \"accountNo\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/v2/customers/:uuid",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "v2",
+                    "customers",
+                    ":uuid"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Get list of bank codes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://api.payonex.asia/customers/options/bank-codes",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "customers",
+                "options",
+                "bank-codes"
+              ]
+            },
+            "description": "List of bank codes that PAYONEX supported"
+          },
+          "response": [
+            {
+              "name": "Get list of bank codes success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "https://api.payonex.asia/customers/options/bank-codes",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "customers",
+                    "options",
+                    "bank-codes"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"bank_code\": \"<string>\",\n    \"bank_name_th\": \"<string>\",\n    \"bank_name_en\": \"<string>\"\n  }\n}"
+            },
+            {
+              "name": "No authorization or invalid input or failed condition",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "https://api.payonex.asia/customers/options/bank-codes",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "customers",
+                    "options",
+                    "bank-codes"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\"\n}"
+            },
+            {
+              "name": "System error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://api.payonex.asia/customers/options/bank-codes",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "customers",
+                    "options",
+                    "bank-codes"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Merchant",
+      "item": [
+        {
+          "name": "get balance",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJraWQiOiJWYjRvS3NrSGxLNjBBUHhtcFFvYVltTW8zWDhGNGdEeDN3eDdTM2hLcWl3PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJhOThhNGFjMy1hNTBjLTQ1YzktOWQxOC1iZDg1ZGRhNjJhNDgiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfQUdPbWIwekc1IiwiY29nbml0bzp1c2VybmFtZSI6ImFhNmY5MGY5LWM1YzktNGNiNS1hYzU5LWI1MDJmODBkODllNiIsImN1c3RvbTpwYXJ0bmVyIjoiUEFZT05FWCIsImN1c3RvbTpzZWN1cmUiOiIyMjMuMjA2LjIyMy4xNjQiLCJvcmlnaW5fanRpIjoiMGFjOWE1ZDctZGZjMi00NmU2LTg4ZTUtODk5ZDJhNjkxYzA0IiwiYXVkIjoiOHRuN2JyMXN2Y2poZGdjYWQ3amVsNGdiciIsImV2ZW50X2lkIjoiNDU3MzgwZDItYzQ2OS00YjgxLWIxZWItMWE5NjEyYTg5OGFiIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NzI4MDc2ODYsImN1c3RvbTpjbGllbnRDb2RlIjoiSFVBWVRFRU5VSSIsImV4cCI6MTc3Mjg5NDA4NiwiY3VzdG9tOnJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MjgwNzY4NiwianRpIjoiNjMyYzYwM2MtNWE1Yi00MGI3LWIzZmMtMjhkODk4YWU3OTIwIn0.aghLUTG1wqmM3AowffmUi3iuZUezBOJDbtXSUopBnJwtPG9-6aLHnicDLq8BR5w46pH5owgfqgitFu0drKgu2qaYdwf1cu4hvujmC9EihtiI6GOMoP0MJvyxvqEcgdGqc8TJibeQPgllRhPreK-QU6Uqma9LjFG8ll01hmfsTektZrmRa90NhGM3NCBgTTlXluVWJPT1MANXC6eL9pwOaMxx0dZhQC0J4Un1Q8KVEEKWTpCzXPd-0NrE1av4xS4jKuq1QTSgxbsc9kLOFoG35PbPaVPNI2WrS2OggLnAOmxzPulegmyKzMdfQ65pDeh8nMtgvU0tpGLQRPpJp2Gdqg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.payonex.asia/profile/balance",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "profile",
+                "balance"
+              ]
+            },
+            "description": "This line is used for Check the Merchant balance to see how much is currently remaining. Return balance of merchant"
+          },
+          "response": [
+            {
+              "name": "Get balance success success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "url": {
+                  "raw": "https://api.payonex.asia/profile/balance",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "profile",
+                    "balance"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"balance\": \"<number>\",\n    \"settleBalance\": \"<number>\"\n  }\n}"
+            },
+            {
+              "name": "No authorization or invalid input or failed condition",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "url": {
+                  "raw": "https://api.payonex.asia/profile/balance",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "profile",
+                    "balance"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\"\n}"
+            },
+            {
+              "name": "System error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "url": {
+                  "raw": "https://api.payonex.asia/profile/balance",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "profile",
+                    "balance"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "configulation",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJraWQiOiJWYjRvS3NrSGxLNjBBUHhtcFFvYVltTW8zWDhGNGdEeDN3eDdTM2hLcWl3PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJhOThhNGFjMy1hNTBjLTQ1YzktOWQxOC1iZDg1ZGRhNjJhNDgiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfQUdPbWIwekc1IiwiY29nbml0bzp1c2VybmFtZSI6ImFhNmY5MGY5LWM1YzktNGNiNS1hYzU5LWI1MDJmODBkODllNiIsImN1c3RvbTpwYXJ0bmVyIjoiUEFZT05FWCIsImN1c3RvbTpzZWN1cmUiOiIyMjMuMjA2LjIyMy4xNjQiLCJvcmlnaW5fanRpIjoiMGFjOWE1ZDctZGZjMi00NmU2LTg4ZTUtODk5ZDJhNjkxYzA0IiwiYXVkIjoiOHRuN2JyMXN2Y2poZGdjYWQ3amVsNGdiciIsImV2ZW50X2lkIjoiNDU3MzgwZDItYzQ2OS00YjgxLWIxZWItMWE5NjEyYTg5OGFiIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NzI4MDc2ODYsImN1c3RvbTpjbGllbnRDb2RlIjoiSFVBWVRFRU5VSSIsImV4cCI6MTc3Mjg5NDA4NiwiY3VzdG9tOnJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MjgwNzY4NiwianRpIjoiNjMyYzYwM2MtNWE1Yi00MGI3LWIzZmMtMjhkODk4YWU3OTIwIn0.aghLUTG1wqmM3AowffmUi3iuZUezBOJDbtXSUopBnJwtPG9-6aLHnicDLq8BR5w46pH5owgfqgitFu0drKgu2qaYdwf1cu4hvujmC9EihtiI6GOMoP0MJvyxvqEcgdGqc8TJibeQPgllRhPreK-QU6Uqma9LjFG8ll01hmfsTektZrmRa90NhGM3NCBgTTlXluVWJPT1MANXC6eL9pwOaMxx0dZhQC0J4Un1Q8KVEEKWTpCzXPd-0NrE1av4xS4jKuq1QTSgxbsc9kLOFoG35PbPaVPNI2WrS2OggLnAOmxzPulegmyKzMdfQ65pDeh8nMtgvU0tpGLQRPpJp2Gdqg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"minDeposit\": 100,\n  \"maxWithdraw\": 200000\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.payonex.asia/profile/settings",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "profile",
+                "settings"
+              ]
+            },
+            "description": "Update maximum withdraw and minimum deposit amount\n\n| Field | Type | Description |\n| --- | --- | --- |\n| minDeposit | number | the system want config more than 20 - 1000000 |\n| maxWithdraw | number | the system want config more than 100 - 1000000 |"
+          },
+          "response": [
+            {
+              "name": "Update success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"minDeposit\": \"<number>\",\n  \"maxWithdraw\": \"<number>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/profile/settings",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "profile",
+                    "settings"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"partner\": \"<string>\",\n    \"clientCode\": \"<string>\",\n    \"minDeposit\": \"<number>\",\n    \"maxWithdraw\": \"<number>\"\n  }\n}"
+            },
+            {
+              "name": "No authorization or invalid input or failed condition",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"minDeposit\": \"<number>\",\n  \"maxWithdraw\": \"<number>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/profile/settings",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "profile",
+                    "settings"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\"\n}"
+            },
+            {
+              "name": "System error",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"minDeposit\": \"<number>\",\n  \"maxWithdraw\": \"<number>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/profile/settings",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "profile",
+                    "settings"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ],
+      "description": "#### Merchant This section is the connection between your networks. You can manage various financial matters such as setting minimum deposit and maximum withdrawal values ​​at this Api URL."
+    },
+    {
+      "name": "Statement",
+      "item": [
+        {
+          "name": "Get list statement",
+          "request": {
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "Authorization",
+                  "type": "string"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}",
+                  "type": "string"
+                },
+                {
+                  "key": "in",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.payonex.asia/transactions?page=1&size=10&filter=",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "The numbers of offset page"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "The numbers of items to return"
+                },
+                {
+                  "key": "filter",
+                  "value": "",
+                  "description": "Filter object with this format FIELD:VALUE eg. status:PENDING"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "List transactions success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions?page=<number>&size=<number>&filter=<string>",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "<number>",
+                      "description": "The numbers of offset page"
+                    },
+                    {
+                      "key": "size",
+                      "value": "<number>",
+                      "description": "The numbers of items to return"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>",
+                      "description": "Filter object with this format FIELD:VALUE eg. status:PENDING"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"data\": {\n      \"uuid\": \"<string>\",\n      \"partner\": \"<string>\",\n      \"customerUuid\": \"<string>\",\n      \"clientCode\": \"<string>\",\n      \"type\": \"withdraw\",\n      \"settlement\": \"FALSE\",\n      \"reconcile\": \"FALSE\",\n      \"qrCode\": \"<string>\",\n      \"status\": \"CONFIRM\",\n      \"amount\": \"<number>\",\n      \"currency\": \"<string>\",\n      \"settleAmount\": \"<number>\",\n      \"settleCurrency\": \"<string>\",\n      \"fee\": \"<number>\",\n      \"rate\": \"<number>\"\n    },\n    \"count\": \"<number>\",\n    \"totalPages\": \"<number>\"\n  }\n}"
+            },
+            {
+              "name": "No authorization or invalid input or failed condition",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions?page=<number>&size=<number>&filter=<string>",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "<number>",
+                      "description": "The numbers of offset page"
+                    },
+                    {
+                      "key": "size",
+                      "value": "<number>",
+                      "description": "The numbers of items to return"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>",
+                      "description": "Filter object with this format FIELD:VALUE eg. status:PENDING"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\"\n}"
+            },
+            {
+              "name": "System error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions?page=<number>&size=<number>&filter=<string>",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "<number>",
+                      "description": "The numbers of offset page"
+                    },
+                    {
+                      "key": "size",
+                      "value": "<number>",
+                      "description": "The numbers of items to return"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "<string>",
+                      "description": "Filter object with this format FIELD:VALUE eg. status:PENDING"
+                    }
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Update transaction",
+          "request": {
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "Authorization",
+                  "type": "string"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}",
+                  "type": "string"
+                },
+                {
+                  "key": "in",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SUCCESS\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.payonex.asia/transactions/:uuid/status",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "transactions",
+                ":uuid",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "uuid",
+                  "value": "76a16b01-5209-4a49-be0a-5836842b1d93",
+                  "description": "(Required) Transaction UUID"
+                }
+              ]
+            },
+            "description": "Use this method to approved(SUCCESS) or rejected(REJECTED) transaction that has status ON_HOLD, approved will add credit balance to merchant and fee calculated, rejected will go to refund process"
+          },
+          "response": [
+            {
+              "name": "Create deposit request success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"SUCCESS\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/:uuid/status",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    ":uuid",
+                    "status"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"uuid\": \"<string>\",\n    \"partner\": \"<string>\",\n    \"customerUuid\": \"<string>\",\n    \"clientCode\": \"<string>\",\n    \"type\": \"topup\",\n    \"settlement\": \"FALSE\",\n    \"reconcile\": \"FALSE\",\n    \"qrCode\": \"<string>\",\n    \"status\": \"PROCESSING\",\n    \"amount\": \"<number>\",\n    \"currency\": \"<string>\",\n    \"settleAmount\": \"<number>\",\n    \"settleCurrency\": \"<string>\",\n    \"fee\": \"<number>\",\n    \"rate\": \"<number>\"\n  }\n}"
+            },
+            {
+              "name": "No authorization or invalid input or failed condition",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"SUCCESS\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/:uuid/status",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    ":uuid",
+                    "status"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\"\n}"
+            },
+            {
+              "name": "System error",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"SUCCESS\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/:uuid/status",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    ":uuid",
+                    "status"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Reject transaction",
+          "request": {
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "Authorization",
+                  "type": "string"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}",
+                  "type": "string"
+                },
+                {
+                  "key": "in",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"examples\": {\n    \"bankInfo\": {\n      \"summary\": \"Bank info\",\n      \"value\": {\n        \"bankCode\": \"SCB\",\n        \"accountNo\": \"4067015341\"\n      }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.payonex.asia/transactions/:uuid/refund",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "transactions",
+                ":uuid",
+                "refund"
+              ],
+              "variable": [
+                {
+                  "key": "uuid",
+                  "value": "9680019c-9bc0-410d-95bb-113d73e7207c",
+                  "description": "(Required) Transaction UUID"
+                }
+              ]
+            },
+            "description": "Refund transaction that has rejected status"
+          },
+          "response": [
+            {
+              "name": "Refund request success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"examples\": {\n    \"bankInfo\": {\n      \"summary\": \"Bank info\",\n      \"value\": {\n        \"bankCode\": \"SCB\",\n        \"accountNo\": \"1234\"\n      }\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/:uuid/refund",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    ":uuid",
+                    "refund"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"uuid\": \"<string>\",\n    \"status\": \"<string>\",\n    \"refundInfo\": {\n      \"accountNo\": \"<string>\",\n      \"bankCode\": \"<string>\",\n      \"bankName\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  }\n}"
+            },
+            {
+              "name": "No authorization or invalid input or failed condition",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"examples\": {\n    \"bankInfo\": {\n      \"summary\": \"Bank info\",\n      \"value\": {\n        \"bankCode\": \"SCB\",\n        \"accountNo\": \"1234\"\n      }\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/:uuid/refund",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    ":uuid",
+                    "refund"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\"\n}"
+            },
+            {
+              "name": "System error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"examples\": {\n    \"bankInfo\": {\n      \"summary\": \"Bank info\",\n      \"value\": {\n        \"bankCode\": \"SCB\",\n        \"accountNo\": \"1234\"\n      }\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/:uuid/refund",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    ":uuid",
+                    "refund"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Get transaction by uuid",
+          "request": {
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "Authorization",
+                  "type": "string"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}",
+                  "type": "string"
+                },
+                {
+                  "key": "in",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.payonex.asia/transactions/:uuid",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "transactions",
+                ":uuid"
+              ],
+              "variable": [
+                {
+                  "key": "uuid",
+                  "value": "76a16b01-5209-4a49-be0a-5836842b1d93",
+                  "description": "(Required) Transaction UUID"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "List transactions success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/:uuid",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    ":uuid"
+                  ],
+                  "variable": [
+                    {
+                      "key": "uuid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"uuid\": \"<string>\",\n    \"partner\": \"<string>\",\n    \"customerUuid\": \"<string>\",\n    \"clientCode\": \"<string>\",\n    \"type\": \"topup\",\n    \"settlement\": \"FALSE\",\n    \"reconcile\": \"FALSE\",\n    \"qrCode\": \"<string>\",\n    \"status\": \"PROCESSING\",\n    \"amount\": \"<number>\",\n    \"currency\": \"<string>\",\n    \"settleAmount\": \"<number>\",\n    \"settleCurrency\": \"<string>\",\n    \"fee\": \"<number>\",\n    \"rate\": \"<number>\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Payin request",
+          "request": {
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}",
+                  "type": "string"
+                },
+                {
+                  "key": "key",
+                  "value": "Authorization",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerUuid\": \"f4f54b18-3980-4bac-bf7a-d41f2dde254b\",\n  \"amount\": 500,\n  \"referenceId\":\"{{$randomUUID}}\",\n  \"note\":\"TEST\",\n  \"remark\":\"\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.payonex.asia/transactions/deposit/request",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "transactions",
+                "deposit",
+                "request"
+              ]
+            },
+            "description": "Use this method when customer want to deposit money, this will return payment link and qr code text, merchant can either redirect customer to generated link or using qr code data response to show qr on merchant website\n\n| **Field** | **Type** | **Description** |\n| --- | --- | --- |\n| referenceId | string | Field referenceId We recommend you always submit it. You can use it to map your data. |\n| note | string | Field Note is used to save text. |\n| remark | string | Field remark is used to save text. |\n\nCallback Example\n\n``` json\n{\n\"uuid\":\"xxx\",\n\"channelName\":\"channel xx\",\n\"merchantOrderId\":\"xxx\",\n\"platformOrderId\":\"xxx\",\n\"customerUuid\":\"xxx\",\n\"accountName\":\"xxxx\",\n\"bankCode\":\"KBANK\",\n\"accountNo\":\"12341234\",\n\"amount\":100,\n\"fee\":1.6,\n\"settleAmount\":98.4,\n\"type\":\"deposit\",\n\"status\":\"SUCCESS\",\n\"referenceId\":\"\"\n}\n\n ```"
+          },
+          "response": [
+            {
+              "name": "Create deposit request success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customerUuid\": \"<string>\",\n  \"amount\": \"<number>\",\n  \"referenceId\":\"<string>\",\n  \"note\":\"<string>\",\n  \"remark\":\"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/deposit/request",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    "deposit",
+                    "request"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"uuid\": \"<string>\",\n    \"link\": \"<string>\",\n    \"qrCode\": \"<string>\",\n    \"qrBase64\": \"<string>\"\n  }\n}"
+            },
+            {
+              "name": "No authorization or invalid input or failed condition",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customerUuid\": \"<string>\",\n  \"amount\": \"<number>\",\n  \"referenceId\":\"<string>\",\n  \"note\":\"<string>\",\n  \"remark\":\"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/deposit/request",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    "deposit",
+                    "request"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\"\n}"
+            },
+            {
+              "name": "System error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customerUuid\": \"<string>\",\n  \"amount\": \"<number>\",\n  \"referenceId\":\"<string>\",\n  \"note\":\"<string>\",\n  \"remark\":\"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/deposit/request",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    "deposit",
+                    "request"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "Payin request",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customerUuid\": \"8a1ed82e-8763-439a-bdbd-8c624581ecb1\",\n  \"amount\": 1000,\n  \"referenceId\":\"{{$randomUUID}}\",\n  \"note\":\"TEST\",\n  \"remark\":\"\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/deposit/request",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    "deposit",
+                    "request"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 200
+                },
+                {
+                  "key": "date",
+                  "value": "Sun, 08 Mar 2026 07:33:41 GMT"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "content-length",
+                  "value": "53710"
+                },
+                {
+                  "key": "x-amzn-requestid",
+                  "value": "39c5f975-b30c-44e3-b394-37b48465ce03"
+                },
+                {
+                  "key": "access-control-allow-origin",
+                  "value": "*"
+                },
+                {
+                  "key": "access-control-allow-headers",
+                  "value": "*"
+                },
+                {
+                  "key": "x-amz-apigw-id",
+                  "value": "Z5LsWGTNyQ0EGsA="
+                },
+                {
+                  "key": "access-control-allow-methods",
+                  "value": "*"
+                },
+                {
+                  "key": "x-amzn-trace-id",
+                  "value": "Root=1-69ad264e-42caa7b55c951a0949434537;Parent=224478c928fc744a;Sampled=0;Lineage=1:c471bc90:0"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"successfully\",\n    \"code\": \"20000\",\n    \"data\": {\n        \"link\": \"https://payment.payonex.asia/pay/6af20507-434d-46d7-9edc-0d325aaffd15\",\n        \"qrCode\": \"00020101021229370016A000000677010111011300666374052005802TH530376454071000.006304FAD3\",\n        \"uuid\": \"6af20507-434d-46d7-9edc-0d325aaffd15\",\n        \"clientName\": \"TM888\",\n        \"customerName\": \"TM888\",\n        \"qrExpireTime\": 1772955815163,\n        \"qrType\": \"QRCODE\",\n        \"option\": \"QR_CODE\",\n        \"amount\": 1000,\n        \"transferAmount\": 1000,\n        \"redirectUrl\": \"\",\n        \"qrBase64\": \"data:image/png;base64,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\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Payout request",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.payonex.asia/transactions/withdraw/request",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "transactions",
+                "withdraw",
+                "request"
+              ]
+            },
+            "description": "Use this method when customer want to withdraw money\n\n| **Field** | **Type** | **Description** |\n| --- | --- | --- |\n| referenceId | string | Field referenceId We recommend you always submit it. You can use it to map your data. |\n| note | string | Field Note is used to save text. |\n| remark | string | Field remark is used to save text. |\n\nCallback Example\n\n``` json\n{\n  \"uuid\":\"xxx\",\n  \"customerUuid\": \"xxx\",\n  \"channelName\":\"channel xx\",\n  \"merchantOrderId\":\"xxx\",\n  \"platformOrderId\":\"xxx\",\n  \"accountName\": \"xxx\",\n  \"bankCode\": \"SCB\",\n  \"accountNo\": \"12341234\",\n  \"amount\": 181,\n  \"fee\": 0,\n  \"settleAmount\": 181.00,\n  \"type\": \"withdraw\",\n  \"status\": \"SUCCESS\",\n  \"referenceId\": \"xxx\"\n}\n\n ```"
+          },
+          "response": [
+            {
+              "name": "Create deposit request success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customerUuid\": \"<string>\",\n  \"amount\": \"<number>\",\n  \"referenceId\":\"<string>\",\n  \"note\":\"<string>\",\n  \"remark\":\"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/withdraw/request",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    "withdraw",
+                    "request"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\",\n  \"data\": {\n    \"uuid\": \"<string>\"\n  }\n}"
+            },
+            {
+              "name": "No authorization or invalid input or failed condition",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customerUuid\": \"<string>\",\n  \"amount\": \"<number>\",\n  \"referenceId\":\"<string>\",\n  \"note\":\"<string>\",\n  \"remark\":\"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/withdraw/request",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    "withdraw",
+                    "request"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\"\n}"
+            },
+            {
+              "name": "System error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customerUuid\": \"<string>\",\n  \"amount\": \"<number>\",\n  \"referenceId\":\"<string>\",\n  \"note\":\"<string>\",\n  \"remark\":\"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/withdraw/request",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    "withdraw",
+                    "request"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Upload slip",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.payonex.asia/transactions/upload-slip",
+              "protocol": "https",
+              "host": [
+                "api",
+                "payonex",
+                "asia"
+              ],
+              "path": [
+                "transactions",
+                "upload-slip"
+              ]
+            },
+            "description": "Use this method when customer want to withdraw money\n\n| **Field** | **Type** | **Description** |\n| --- | --- | --- |\n| base64 | string | Field base64 for use in checking slips, matching them with transactions to complete the payment. |"
+          },
+          "response": [
+            {
+              "name": "upload slip",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "<API Key>",
+                    "description": "Added as a part of security scheme: apikey"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"base64\" :  \"\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://api.payonex.asia/transactions/withdraw/request",
+                  "protocol": "https",
+                  "host": [
+                    "api",
+                    "payonex",
+                    "asia"
+                  ],
+                  "path": [
+                    "transactions",
+                    "withdraw",
+                    "request"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"<string>\",\n  \"code\": \"<string>\"  \n}"
+            }
+          ]
+        }
+      ],
+      "description": "#### List of various transactions regarding deposits and withdrawals. You can use this API to check."
+    },
+    {
+      "name": "webhook Deposit",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"success\": true,\n    \"message\": \"successfully\",\n    \"code\": \"20000\",\n    \"data\": {\n        \"uuid\": \"9495ab69-fe58-4305-8369-2fabb8295cea\",\n        \"channelName\": \"channel 30\",\n        \"merchantOrderId\": \"GR6H2WQIPAJX0YBQKPLGVMPHHU7N2J7I\",\n        \"platformOrderId\": \"2603130000072918710095140984\",\n        \"customerUuid\": \"f4f54b18-3980-4bac-bf7a-d41f2dde254b\",\n        \"accountName\": \"น.ส. มะลิดา กิ่งเมือง\",\n        \"bankCode\": \"KBANK\",\n        \"accountNo\": \"2041057028\",\n        \"amount\": 500,\n        \"fee\": 1.17,\n        \"settleAmount\": 500.00,\n        \"type\": \"deposit\",\n        \"status\": \"SUCCESS\",\n        \"referenceId\": \"DEP-1773395499208-a8718a98\"\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://hook.gametester.win/payonex/webhook",
+          "protocol": "https",
+          "host": [
+            "hook",
+            "gametester",
+            "win"
+          ],
+          "path": [
+            "payonex",
+            "webhook"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "webhook Withdraw",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"success\": true,\n    \"message\": \"successfully\",\n    \"code\": \"20000\",\n    \"data\": {\n        \"uuid\": \"bd9a5c0b-c840-479f-ab38-434a796c0517\",\n        \"channelName\": \"channel 40\",\n        \"merchantOrderId\": \"bd9a5c0b-c840-479f-ab38-434a796c0517\",\n        \"platformOrderId\": \"8c66045e-00fc-4f1c-a8c5-9a351741d101\",\n        \"customerUuid\": \"f4f54b18-3980-4bac-bf7a-d41f2dde254b\",\n        \"accountName\": \"น.ส. มะลิดา กิ่งเมือง\",\n        \"bankCode\": \"KBANK\",\n        \"accountNo\": \"2041057028\",\n        \"amount\": 800,\n        \"fee\": 1.17,\n        \"settleAmount\": 800,\n        \"type\": \"withdraw\",\n        \"status\": \"SUCCESS\",\n        \"referenceId\": \"WID-1772961668629-a8718a98\"\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://hook.gametester.win/payonex/webhook",
+          "protocol": "https",
+          "host": [
+            "hook",
+            "gametester",
+            "win"
+          ],
+          "path": [
+            "payonex",
+            "webhook"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://admin-api.payonex.asia"
+    },
+    {
+      "key": "apiKey",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

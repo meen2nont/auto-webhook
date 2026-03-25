@@ -1,0 +1,96 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "run worldpayz mock",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"start",
+				"--prefix",
+				"worldpayz-mock"
+			],
+			"isBackground": true,
+			"group": "test"
+		},
+		{
+			"label": "check worldpayz root",
+			"type": "shell",
+			"command": "curl",
+			"args": [
+				"-s",
+				"http://localhost:3102/"
+			],
+			"isBackground": false,
+			"group": "test"
+		},
+		{
+			"label": "validate worldpayz flow",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"worldpayz-mock/smoke-test.js"
+			],
+			"isBackground": false,
+			"group": "test"
+		},
+		{
+			"label": "run worldpayz smoke test",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"worldpayz-mock/smoke-test.js"
+			],
+			"isBackground": false,
+			"group": "test"
+		},
+		{
+			"label": "worldpayz smoke script",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"smoke",
+				"--prefix",
+				"worldpayz-mock"
+			],
+			"isBackground": false,
+			"group": "test"
+		},
+		{
+			"label": "run worldpayz mock 3103",
+			"type": "shell",
+			"command": "PORT=3103 npm start --prefix worldpayz-mock",
+			"isBackground": true,
+			"group": "test"
+		},
+		{
+			"label": "run worldpayz smoke 3103",
+			"type": "shell",
+			"command": "WORLDPAYZ_BASE_URL=http://localhost:3103 npm run smoke --prefix worldpayz-mock",
+			"isBackground": false,
+			"group": "test"
+		},
+		{
+			"label": "rerun worldpayz smoke 3103",
+			"type": "shell",
+			"command": "WORLDPAYZ_BASE_URL=http://localhost:3103 npm run smoke --prefix worldpayz-mock",
+			"isBackground": false,
+			"group": "test"
+		},
+		{
+			"label": "run worldpayz mock 3104",
+			"type": "shell",
+			"command": "PORT=3104 npm start --prefix worldpayz-mock",
+			"isBackground": true,
+			"group": "test"
+		},
+		{
+			"label": "run worldpayz smoke 3104",
+			"type": "shell",
+			"command": "WORLDPAYZ_BASE_URL=http://localhost:3104 npm run smoke --prefix worldpayz-mock",
+			"isBackground": false,
+			"group": "test"
+		}
+	]
+}

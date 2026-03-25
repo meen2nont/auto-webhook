@@ -1,0 +1,1047 @@
+{
+  "info": {
+    "name": "Worldpayz Mock API",
+    "description": "Complete Postman collection for Worldpayz Mock API with signature authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      },
+      {
+        "key": "key",
+        "value": "x-api-key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{api_key}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst requestName = pm.info.requestName || '';\n\nif (requestName === 'Create Fiat Payment') {\n  const orderId = 'order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_order_id', orderId);\n}\nif (requestName === 'Create Crypto Payment') {\n  const orderId = 'crypto-order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_order_id', orderId);\n}\nif (requestName === 'Create Fiat Withdrawal') {\n  const orderId = 'withdraw-fiat-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_withdrawal_order_id', orderId);\n}\nif (requestName === 'Create Crypto Withdrawal') {\n  const orderId = 'withdraw-crypto-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_withdrawal_order_id', orderId);\n}\n\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst method = pm.request.method.toUpperCase();\nconst secretKey = pm.collectionVariables.get('secret_key') || 'WORLDPAYZ_MOCK_SECRET_KEY';\nconst apiKey = pm.collectionVariables.get('api_key') || 'WORLDPAYZ_MOCK_API_KEY';\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\n\npm.collectionVariables.set('test_timestamp', timestamp);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.request.headers.upsert({ key: 'x-api-key', value: apiKey });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Setup",
+      "item": [
+        {
+          "name": "Service Info",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst apiKey = pm.collectionVariables.get('api_key');\nif (!secretKey || !apiKey) {\n  throw new Error('Missing api_key or secret_key in collection variables');\n}\n\nconst method = pm.request.method.toUpperCase();\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.request.headers.upsert({ key: 'x-api-key', value: apiKey });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Service is running', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.service).to.equal('worldpayz-mock');\n    \n    // Save configuration\n    pm.collectionVariables.set('api_key', res.apiKey);\n    pm.collectionVariables.set('secret_key', res.secretKey);\n    console.log('API Setup Complete:', res.apiKey);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": [
+                "{{base_url}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Balance & Config",
+      "item": [
+        {
+          "name": "Balance Query",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst requestName = pm.info.requestName || '';\n\nif (requestName === 'Create Fiat Payment') {\n  const orderId = 'order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_order_id', orderId);\n}\nif (requestName === 'Create Crypto Payment') {\n  const orderId = 'crypto-order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_order_id', orderId);\n}\nif (requestName === 'Create Fiat Withdrawal') {\n  const orderId = 'withdraw-fiat-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_withdrawal_order_id', orderId);\n}\nif (requestName === 'Create Crypto Withdrawal') {\n  const orderId = 'withdraw-crypto-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_withdrawal_order_id', orderId);\n}\n\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst method = pm.request.method.toUpperCase();\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'x-api-key', value: pm.collectionVariables.get('api_key') || '' });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Balance query successful', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n    pm.expect(res.data).to.have.property('result');\n    pm.expect(res.data.result).to.have.property('available');\n    pm.expect(res.data.result).to.have.property('freeze');\n    pm.expect(res.data.result).to.have.property('total');\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/balance/query",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "balance",
+                "query"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bank Config",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst requestName = pm.info.requestName || '';\n\nif (requestName === 'Create Fiat Payment') {\n  const orderId = 'order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_order_id', orderId);\n}\nif (requestName === 'Create Crypto Payment') {\n  const orderId = 'crypto-order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_order_id', orderId);\n}\nif (requestName === 'Create Fiat Withdrawal') {\n  const orderId = 'withdraw-fiat-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_withdrawal_order_id', orderId);\n}\nif (requestName === 'Create Crypto Withdrawal') {\n  const orderId = 'withdraw-crypto-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_withdrawal_order_id', orderId);\n}\n\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst method = pm.request.method.toUpperCase();\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'x-api-key', value: pm.collectionVariables.get('api_key') || '' });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Bank config returned', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n    pm.expect(res.data).to.be.an('object');\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/ebank/bankConfig",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "ebank",
+                "bankConfig"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Chain List",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst requestName = pm.info.requestName || '';\n\nif (requestName === 'Create Fiat Payment') {\n  const orderId = 'order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_order_id', orderId);\n}\nif (requestName === 'Create Crypto Payment') {\n  const orderId = 'crypto-order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_order_id', orderId);\n}\nif (requestName === 'Create Fiat Withdrawal') {\n  const orderId = 'withdraw-fiat-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_withdrawal_order_id', orderId);\n}\nif (requestName === 'Create Crypto Withdrawal') {\n  const orderId = 'withdraw-crypto-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_withdrawal_order_id', orderId);\n}\n\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst method = pm.request.method.toUpperCase();\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'x-api-key', value: pm.collectionVariables.get('api_key') || '' });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Chain list returned', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n    pm.expect(res.data).to.be.an('array');\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/chain/list",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "chain",
+                "list"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments - Fiat",
+      "item": [
+        {
+          "name": "Create Fiat Payment",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst requestName = pm.info.requestName || '';\n\nif (requestName === 'Create Fiat Payment') {\n  const orderId = 'order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_order_id', orderId);\n}\nif (requestName === 'Create Crypto Payment') {\n  const orderId = 'crypto-order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_order_id', orderId);\n}\nif (requestName === 'Create Fiat Withdrawal') {\n  const orderId = 'withdraw-fiat-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_withdrawal_order_id', orderId);\n}\nif (requestName === 'Create Crypto Withdrawal') {\n  const orderId = 'withdraw-crypto-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_withdrawal_order_id', orderId);\n}\n\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst method = pm.request.method.toUpperCase();\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'x-api-key', value: pm.collectionVariables.get('api_key') || '' });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Fiat payment created', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n    pm.expect(res.data).to.have.property('id');\n    pm.expect(res.data).to.have.property('order_id');\n    pm.expect(res.data.status).to.equal('PENDING');\n    pm.expect(res.data).to.have.property('payer_bank_provider');\n    pm.expect(res.data).to.have.property('payer_bank_account_number');\n    pm.expect(res.data).to.have.property('payer_bank_account_name');\n    pm.expect(res.data).to.have.property('fee_subtract');\n    \n    pm.collectionVariables.set('fiat_payment_id', res.data.id);\n    console.log('Payment Created:', res.data.id);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{fiat_order_id}}\",\n  \"order_user_reference\": \"user-12345\",\n  \"payment_method_type\": \"PROMPTPAY_QR\",\n  \"amount\": \"100\",\n  \"from_currency\": \"THB\",\n  \"to_currency\": \"THB\",\n  \"payment_domain\": \"https://example.com\",\n  \"url_return\": \"https://example.com/return\",\n  \"url_success\": \"https://example.com/success\",\n  \"url_failed\": \"https://example.com/failed\",\n  \"payer_bank_provider\": \"SCB\",\n  \"payer_bank_account_number\": \"1234567890\",\n  \"payer_bank_account_name\": \"Test Payer\",\n  \"additional_data\": {}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/payment/createInvoicePayment/fiat",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "payment",
+                "createInvoicePayment",
+                "fiat"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Fiat Payment Info",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst requestName = pm.info.requestName || '';\n\nif (requestName === 'Create Fiat Payment') {\n  const orderId = 'order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_order_id', orderId);\n}\nif (requestName === 'Create Crypto Payment') {\n  const orderId = 'crypto-order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_order_id', orderId);\n}\nif (requestName === 'Create Fiat Withdrawal') {\n  const orderId = 'withdraw-fiat-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_withdrawal_order_id', orderId);\n}\nif (requestName === 'Create Crypto Withdrawal') {\n  const orderId = 'withdraw-crypto-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_withdrawal_order_id', orderId);\n}\n\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst method = pm.request.method.toUpperCase();\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'x-api-key', value: pm.collectionVariables.get('api_key') || '' });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Payment info retrieved', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n    pm.expect(res.data.payment).to.have.property('id');\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/payment/info?id={{fiat_payment_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "payment",
+                "info"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "{{fiat_payment_id}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments - Crypto",
+      "item": [
+        {
+          "name": "Create Crypto Payment",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst requestName = pm.info.requestName || '';\n\nif (requestName === 'Create Fiat Payment') {\n  const orderId = 'order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_order_id', orderId);\n}\nif (requestName === 'Create Crypto Payment') {\n  const orderId = 'crypto-order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_order_id', orderId);\n}\nif (requestName === 'Create Fiat Withdrawal') {\n  const orderId = 'withdraw-fiat-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_withdrawal_order_id', orderId);\n}\nif (requestName === 'Create Crypto Withdrawal') {\n  const orderId = 'withdraw-crypto-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_withdrawal_order_id', orderId);\n}\n\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst method = pm.request.method.toUpperCase();\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'x-api-key', value: pm.collectionVariables.get('api_key') || '' });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Crypto payment created', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n    pm.expect(res.data).to.have.property('id');\n    pm.expect(res.data).to.have.property('address');\n    pm.collectionVariables.set('crypto_payment_id', res.data.id);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{crypto_order_id}}\",\n  \"order_user_reference\": \"user-crypto-123\",\n  \"payment_method_type\": \"CRYPTO_TRANSFER\",\n  \"amount\": \"0.5\",\n  \"from_currency\": \"USDT\",\n  \"to_currency\": \"USDT\",\n  \"chain\": \"tron\",\n  \"network\": \"testnet\",\n  \"payment_domain\": \"https://example.com\",\n  \"url_return\": \"https://example.com/return\",\n  \"url_success\": \"https://example.com/success\",\n  \"url_failed\": \"https://example.com/failed\",\n  \"additional_data\": {}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/payment/createInvoicePayment/crypto",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "payment",
+                "createInvoicePayment",
+                "crypto"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Crypto Payment Info",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst requestName = pm.info.requestName || '';\n\nif (requestName === 'Create Fiat Payment') {\n  const orderId = 'order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_order_id', orderId);\n}\nif (requestName === 'Create Crypto Payment') {\n  const orderId = 'crypto-order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_order_id', orderId);\n}\nif (requestName === 'Create Fiat Withdrawal') {\n  const orderId = 'withdraw-fiat-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_withdrawal_order_id', orderId);\n}\nif (requestName === 'Create Crypto Withdrawal') {\n  const orderId = 'withdraw-crypto-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_withdrawal_order_id', orderId);\n}\n\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst method = pm.request.method.toUpperCase();\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'x-api-key', value: pm.collectionVariables.get('api_key') || '' });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Crypto payment info retrieved', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/payment/info?id={{crypto_payment_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "payment",
+                "info"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "{{crypto_payment_id}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Withdrawals - Fiat",
+      "item": [
+        {
+          "name": "Create Fiat Withdrawal",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst requestName = pm.info.requestName || '';\n\nif (requestName === 'Create Fiat Payment') {\n  const orderId = 'order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_order_id', orderId);\n}\nif (requestName === 'Create Crypto Payment') {\n  const orderId = 'crypto-order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_order_id', orderId);\n}\nif (requestName === 'Create Fiat Withdrawal') {\n  const orderId = 'withdraw-fiat-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_withdrawal_order_id', orderId);\n}\nif (requestName === 'Create Crypto Withdrawal') {\n  const orderId = 'withdraw-crypto-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_withdrawal_order_id', orderId);\n}\n\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst method = pm.request.method.toUpperCase();\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'x-api-key', value: pm.collectionVariables.get('api_key') || '' });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Fiat withdrawal created', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n    pm.expect(res.data).to.have.property('id');\n    pm.expect(['PENDING', 'WITHDRAWAL_PENDING']).to.include(res.data.withdrawal_status);\n    pm.collectionVariables.set('fiat_withdrawal_id', res.data.id);\n    console.log('Withdrawal Created:', res.data.id);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{fiat_withdrawal_order_id}}\",\n  \"order_user_reference\": \"user-withdraw-001\",\n  \"withdrawal_mode\": \"FIAT\",\n  \"amount\": \"500\",\n  \"currency\": \"THB\",\n  \"receiver_bank\": \"SCB\",\n  \"receiver_name\": \"Test Receiver\",\n  \"withdrawal_address\": \"1234567890\",\n  \"chain\": \"offchain\",\n  \"asset_type\": \"native\",\n  \"additional\": {}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/withdrawal/createRequest/fiat",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "withdrawal",
+                "createRequest",
+                "fiat"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Withdrawals",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst requestName = pm.info.requestName || '';\n\nif (requestName === 'Create Fiat Payment') {\n  const orderId = 'order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_order_id', orderId);\n}\nif (requestName === 'Create Crypto Payment') {\n  const orderId = 'crypto-order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_order_id', orderId);\n}\nif (requestName === 'Create Fiat Withdrawal') {\n  const orderId = 'withdraw-fiat-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_withdrawal_order_id', orderId);\n}\nif (requestName === 'Create Crypto Withdrawal') {\n  const orderId = 'withdraw-crypto-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_withdrawal_order_id', orderId);\n}\n\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst method = pm.request.method.toUpperCase();\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'x-api-key', value: pm.collectionVariables.get('api_key') || '' });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Withdrawal list retrieved', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n    pm.expect(res.data).to.be.an('array');\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/withdrawal/list?skip=0&take=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "withdrawal",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "take",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Fiat Withdrawal Info",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst requestName = pm.info.requestName || '';\n\nif (requestName === 'Create Fiat Payment') {\n  const orderId = 'order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_order_id', orderId);\n}\nif (requestName === 'Create Crypto Payment') {\n  const orderId = 'crypto-order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_order_id', orderId);\n}\nif (requestName === 'Create Fiat Withdrawal') {\n  const orderId = 'withdraw-fiat-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_withdrawal_order_id', orderId);\n}\nif (requestName === 'Create Crypto Withdrawal') {\n  const orderId = 'withdraw-crypto-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_withdrawal_order_id', orderId);\n}\n\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst method = pm.request.method.toUpperCase();\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'x-api-key', value: pm.collectionVariables.get('api_key') || '' });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Withdrawal info retrieved', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n    pm.expect(res.data).to.have.property('id');\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/withdrawal/info?id={{fiat_withdrawal_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "withdrawal",
+                "info"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "{{fiat_withdrawal_id}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Withdrawals - Crypto",
+      "item": [
+        {
+          "name": "Create Crypto Withdrawal",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst requestName = pm.info.requestName || '';\n\nif (requestName === 'Create Fiat Payment') {\n  const orderId = 'order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_order_id', orderId);\n}\nif (requestName === 'Create Crypto Payment') {\n  const orderId = 'crypto-order-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_order_id', orderId);\n}\nif (requestName === 'Create Fiat Withdrawal') {\n  const orderId = 'withdraw-fiat-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('fiat_withdrawal_order_id', orderId);\n}\nif (requestName === 'Create Crypto Withdrawal') {\n  const orderId = 'withdraw-crypto-' + timestamp + '-' + Math.random().toString(36).slice(2, 11);\n  pm.collectionVariables.set('crypto_withdrawal_order_id', orderId);\n}\n\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst method = pm.request.method.toUpperCase();\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'x-api-key', value: pm.collectionVariables.get('api_key') || '' });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Crypto withdrawal created', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n    pm.expect(res.data).to.have.property('id');\n    pm.expect(['PENDING', 'WITHDRAWAL_PENDING']).to.include(res.data.withdrawal_status);\n    pm.collectionVariables.set('crypto_withdrawal_id', res.data.id);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"{{crypto_withdrawal_order_id}}\",\n  \"order_user_reference\": \"user-crypto-withdraw\",\n  \"withdrawal_mode\": \"CRYPTO\",\n  \"amount\": \"0.1\",\n  \"currency\": \"USDT\",\n  \"withdrawal_address\": \"TW1980c59z3ibJ5k3pUKLaXCfMRpWvDj2c\",\n  \"chain\": \"tron\",\n  \"asset_type\": \"USDT\",\n  \"network\": \"testnet\",\n  \"additional\": {}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/withdrawal/createRequest/crypto",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "withdrawal",
+                "createRequest",
+                "crypto"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mock Helpers - Payments",
+      "item": [
+        {
+          "name": "Mock - Confirm Payment",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst apiKey = pm.collectionVariables.get('api_key');\nif (!secretKey || !apiKey) {\n  throw new Error('Missing api_key or secret_key in collection variables');\n}\n\nconst method = pm.request.method.toUpperCase();\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.request.headers.upsert({ key: 'x-api-key', value: apiKey });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Payment confirmed', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mock/payments/{{fiat_payment_id}}/confirm",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mock",
+                "payments",
+                "{{fiat_payment_id}}",
+                "confirm"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mock Helpers - Withdrawals",
+      "item": [
+        {
+          "name": "Mock - Approve Withdrawal",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst apiKey = pm.collectionVariables.get('api_key');\nif (!secretKey || !apiKey) {\n  throw new Error('Missing api_key or secret_key in collection variables');\n}\n\nconst method = pm.request.method.toUpperCase();\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.request.headers.upsert({ key: 'x-api-key', value: apiKey });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Withdrawal approved', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mock/withdrawals/{{fiat_withdrawal_id}}/approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mock",
+                "withdrawals",
+                "{{fiat_withdrawal_id}}",
+                "approve"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mock - Complete Withdrawal",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const timestamp = Date.now().toString();\nconst requestUrl = pm.variables.replaceIn(pm.request.url.toString());\nconst rawBody = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';\nlet parsedBody = '';\nif (rawBody) {\n  try {\n    parsedBody = JSON.parse(rawBody);\n  } catch (error) {\n    parsedBody = rawBody;\n  }\n}\n\nconst secretKey = pm.collectionVariables.get('secret_key');\nconst apiKey = pm.collectionVariables.get('api_key');\nif (!secretKey || !apiKey) {\n  throw new Error('Missing api_key or secret_key in collection variables');\n}\n\nconst method = pm.request.method.toUpperCase();\nconst bodyString = JSON.stringify(parsedBody);\nconst payload = timestamp + '|' + method + '|' + requestUrl + '|' + bodyString;\nconst signature = CryptoJS.HmacSHA256(payload, secretKey).toString(CryptoJS.enc.Hex);\npm.collectionVariables.set('test_signature', signature);\n\npm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\npm.request.headers.upsert({ key: 'x-api-key', value: apiKey });\npm.request.headers.upsert({ key: 'x-timestamp', value: timestamp });\npm.request.headers.upsert({ key: 'x-signature', value: signature });\npm.collectionVariables.set('test_timestamp', timestamp);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Withdrawal completed', () => {\n    pm.expect(pm.response.code).to.equal(200);\n    const res = pm.response.json();\n    pm.expect(res.success).to.equal(true);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "x-timestamp",
+                "value": "{{test_timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "x-signature",
+                "value": "{{test_signature}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mock/withdrawals/{{fiat_withdrawal_id}}/complete",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mock",
+                "withdrawals",
+                "{{fiat_withdrawal_id}}",
+                "complete"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3102",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "WORLDPAYZ_MOCK_API_KEY",
+      "type": "string"
+    },
+    {
+      "key": "secret_key",
+      "value": "WORLDPAYZ_MOCK_SECRET_KEY",
+      "type": "string"
+    },
+    {
+      "key": "fiat_payment_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "crypto_payment_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "fiat_withdrawal_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "crypto_withdrawal_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "fiat_order_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "crypto_order_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "fiat_withdrawal_order_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "crypto_withdrawal_order_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "test_timestamp",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "test_signature",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "run worldpayz mock",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"start"
+			],
+			"isBackground": true,
+			"group": "test"
+		},
+		{
+			"label": "worldpayz smoke script",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"smoke"
+			],
+			"isBackground": false,
+			"group": "test"
+		},
+		{
+			"label": "test enhanced responses on port 3105",
+			"type": "shell",
+			"command": "PORT=3105 npm start",
+			"isBackground": true
+		}
+	]
+}
