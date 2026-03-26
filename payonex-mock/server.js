@@ -17,7 +17,7 @@ const tokens = new Map();
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const DEPOSIT_WEBHOOK_DELAY_MS = Number(process.env.PAYONEX_DEPOSIT_WEBHOOK_DELAY_MS || 5000);
 const WITHDRAW_WEBHOOK_DELAY_MS = Number(process.env.PAYONEX_WITHDRAW_WEBHOOK_DELAY_MS || 5000);
-const PAYONEX_WEBHOOK_URL = 'http://localhost:3000/payonex/webhook'; // Set this to your actual webhook URL if you want to receive callbacks
+const PAYONEX_WEBHOOK_URL = 'https://api.gametester.win/payonex/webhook'; // Set this to your actual webhook URL if you want to receive callbacks
 
 // ─── Auth Middleware ─────────────────────────────────────────────────────────
 const requireAuth = (req, res, next) => {

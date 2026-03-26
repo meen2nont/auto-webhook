@@ -11,7 +11,7 @@ app.use(express.json());
 const API_KEY = '1DE8FEF2BFE950C1B5B5ACF9506C418B222DE75D3B3406F84AAEAC56E9B2BB4B';
 const MERCHANT_ID = 'EXT-2026-A4AF29964BC3';
 const AUTOBANK_WITHDRAW_WEBHOOK_DELAY_MS = Number(process.env.AUTOBANK_WITHDRAW_WEBHOOK_DELAY_MS || 5000);
-const AUTOBANK_WITHDRAW_WEBHOOK_URL = 'http://localhost:3000/autobank/webhook'; // Set this to your actual webhook URL if you want to receive callbacks
+const AUTOBANK_WITHDRAW_WEBHOOK_URL = 'https://api.gametester.win/autobank/webhook'; // Set this to your actual webhook URL if you want to receive callbacks
 app.use((req, res, next) => {
   // ไม่ตรวจสอบ favicon
   if (req.path === '/favicon.ico') return next();

@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 
 const API_KEY = process.env.WORLDPAYZ_API_KEY || 'WORLDPAYZ_MOCK_API_KEY';
 const SECRET_KEY = process.env.WORLDPAYZ_SECRET_KEY || 'WORLDPAYZ_MOCK_SECRET_KEY';
-const PAYMENT_DOMAIN = process.env.WORLDPAYZ_PAYMENT_DOMAIN || 'https://app.wpayz.xyz';
+const PAYMENT_DOMAIN = process.env.WORLDPAYZ_PAYMENT_DOMAIN || 'https://worldpayz.huayteenoi.com/';
 const WEBHOOK_URL = process.env.WORLDPAYZ_WEBHOOK_URL || '';
 const PAYMENT_WEBHOOK_DELAY_MS = Number(process.env.WORLDPAYZ_PAYMENT_WEBHOOK_DELAY_MS || 5000);
 const WITHDRAWAL_WEBHOOK_DELAY_MS = Number(process.env.WORLDPAYZ_WITHDRAWAL_WEBHOOK_DELAY_MS || 5000);
@@ -112,8 +112,8 @@ const FALLBACK_MERCHANT = {
   bank_code: 'SCB',
   bank_account_number: '6123013742',
   bank_account_name: 'Worldpayz Mock Merchant',
-  callback_url: 'http://localhost:3000/worldpayz/webhook',
-  webhook_secret: 'http://localhost:3000/webhook/verification-stats',
+  callback_url: 'https://api.gametester.win/worldpayz/webhook',
+  webhook_secret: 'https://api.gametester.win/webhook/verification-stats',
   api_key: 'WORLDPAYZ_MOCK_API_KEY',
   secret_key: 'WORLDPAYZ_MOCK_SECRET_KEY',
   is_active: true,
@@ -413,7 +413,7 @@ const postJson = (urlString, payload, extraHeaders = {}) => new Promise((resolve
 const buildWebhookHeaders = (merchant, payload, webhookUrl) => {
   const webhookSecret = merchant?.webhook_secret;
   const apiKey = merchant?.api_key;
-  
+
   if (!webhookSecret || !apiKey) return {};
 
   const timestamp = Date.now().toString();
@@ -739,7 +739,7 @@ const withdrawalDetail = (withdrawal) => {
     'REJECTED': 'WITHDRAWAL_REJECTED',
     'PENDING': 'WITHDRAWAL_PENDING'
   };
-  
+
   return {
     id: withdrawal.id,
     seq_num: withdrawal.seq_num,
