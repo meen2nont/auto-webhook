@@ -113,7 +113,7 @@ const FALLBACK_MERCHANT = {
   bank_account_number: '6123013742',
   bank_account_name: 'Worldpayz Mock Merchant',
   callback_url: 'https://api.gametester.win/worldpayz/webhook',
-  webhook_secret: 'https://api.gametester.win/webhook/verification-stats',
+  webhook_secret: 'https://api.gametester.win/worldpayz/webhook/verification-stats',
   api_key: 'WORLDPAYZ_MOCK_API_KEY',
   secret_key: 'WORLDPAYZ_MOCK_SECRET_KEY',
   is_active: true,
@@ -178,19 +178,36 @@ const requireSignatureAuth = (req, res, next) => {
   const apiKey = req.header('x-api-key');
   const signature = req.header('x-signature');
   const timestamp = req.header('x-timestamp');
+  const authLogPrefix = `[AUTH][${new Date().toISOString()}][${req.method} ${req.originalUrl}]`;
+
+  console.log(`${authLogPrefix} Incoming auth check`);
+  console.log(`${authLogPrefix} Headers snapshot`, JSON.stringify({
+    ApiKey: apiKey,
+    Signature: signature,
+    Timestamp: timestamp,
+    SignatureLength: signature ? signature.length : 0,
+    TimestampValue: timestamp
+  }));
 
   if (!apiKey || !signature || !timestamp) {
+    console.log(`${authLogPrefix} Missing required auth headers`);
     return failResponse(res, 401, 'Missing authentication headers', 1401, {
       required: ['x-api-key', 'x-signature', 'x-timestamp']
     });
   }
 
   if (!/^\d+$/.test(timestamp)) {
+    console.log(`${authLogPrefix} Invalid timestamp format`, JSON.stringify({ TimestampValue: timestamp }));
     return failResponse(res, 400, 'x-timestamp must be milliseconds', 1400);
   }
 
+  console.log(`${authLogPrefix} Looking up merchant by API key`);
+
   db.findMerchantByApiKey(apiKey, (merchantErr, merchantFromDb) => {
-    if (merchantErr) return failResponse(res, 500, 'Database error', 1500);
+    if (merchantErr) {
+      console.error(`${authLogPrefix} Merchant lookup failed`, merchantErr.message);
+      return failResponse(res, 500, 'Database error', 1500);
+    }
 
     const merchant = merchantFromDb || (apiKey === API_KEY ? {
       ...FALLBACK_MERCHANT,
@@ -199,22 +216,84 @@ const requireSignatureAuth = (req, res, next) => {
       callback_url: WEBHOOK_URL || FALLBACK_MERCHANT.callback_url
     } : null);
 
+    console.log(`${authLogPrefix} Merchant resolved`, JSON.stringify({
+      source: merchantFromDb ? 'database' : 'fallback',
+      merchantId: merchant?.id || null,
+      merchantCode: merchant?.merchant_code || null,
+      isActive: merchant?.is_active
+    }));
+
     if (!merchant || merchant.is_active === false) {
+      console.log(`${authLogPrefix} API key rejected`, JSON.stringify({ ApiKey: apiKey }));
       return failResponse(res, 403, 'Invalid API key', 1403);
     }
 
+    const secretKeyUsed = merchant.secret_key || SECRET_KEY;
+    const fullUrl = buildFullUrl(req);
+    const bodyForSig = bodyForSignature(req.body);
+
     const expected = generateSignature(
-      merchant.secret_key || SECRET_KEY,
+      secretKeyUsed,
       req.method,
-      buildFullUrl(req),
+      fullUrl,
       req.body,
       timestamp
     );
 
-    if (!fixedTimeCompare(signature, expected)) {
+    // Try alternative URL formats if signature doesn't match (for flexibility)
+    let signatureValid = fixedTimeCompare(signature, expected);
+    let urlUsedForMatch = fullUrl;
+
+    if (!signatureValid) {
+      // Try with localhost:3102 variant
+      const localhostUrl = `http://localhost:3102${req.originalUrl}`;
+      const expectedLocalhost = generateSignature(
+        secretKeyUsed,
+        req.method,
+        localhostUrl,
+        req.body,
+        timestamp
+      );
+      if (fixedTimeCompare(signature, expectedLocalhost)) {
+        signatureValid = true;
+        urlUsedForMatch = localhostUrl;
+      }
+    }
+
+    if (!signatureValid) {
+      // Try with https variant
+      const httpsUrl = `https://worldpayz.huayteenoi.com${req.originalUrl}`;
+      const expectedHttps = generateSignature(
+        secretKeyUsed,
+        req.method,
+        httpsUrl,
+        req.body,
+        timestamp
+      );
+      if (fixedTimeCompare(signature, expectedHttps)) {
+        signatureValid = true;
+        urlUsedForMatch = httpsUrl;
+      }
+    }
+
+    console.log(`${authLogPrefix} Signature generation details`, JSON.stringify({
+      secretKeyUsed,
+      method: req.method,
+      fullUrl,
+      body: bodyForSig,
+      timestamp,
+      expected,
+      provided: signature,
+      signatureValid,
+      urlUsedForMatch
+    }));
+
+    if (!signatureValid) {
+      console.log(`${authLogPrefix} Signature validation failed`);
       return failResponse(res, 401, 'Invalid signature', 1402, { expectedForMock: expected });
     }
 
+    console.log(`${authLogPrefix} Auth success`, JSON.stringify({ merchantId: merchant.id }));
     req.authMerchant = merchant;
     next();
   });
