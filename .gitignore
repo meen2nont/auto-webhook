@@ -36,5 +36,8 @@ Thumbs.db
 !.vscode/tasks.json
 .idea/
 
+# TLS certs
+cert/
+
 # Test artifacts
 worldpayz-mock/smoke-output.txt

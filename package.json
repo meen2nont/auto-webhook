@@ -4,7 +4,9 @@
   "description": "Mock servers for auto-webhook integration testing",
   "private": true,
   "scripts": {
-    "dev:all": "concurrently --names \"auto,payonex,worldpayz\" --prefix-colors \"cyan,yellow,magenta\" \"npm run dev --prefix auto-mock\" \"npm run dev --prefix payonex-mock\" \"npm run dev --prefix worldpayz-mock\""
+    "dev:all": "concurrently --names \"auto,payonex,worldpayz\" --prefix-colors \"cyan,yellow,magenta\" \"npm run dev --prefix auto-mock\" \"npm run dev --prefix payonex-mock\" \"npm run dev --prefix worldpayz-mock\"",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down"
   },
   "devDependencies": {
     "concurrently": "^9.0.0"

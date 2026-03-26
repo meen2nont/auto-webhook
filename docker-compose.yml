@@ -1,0 +1,94 @@
+services:
+  traefik:
+    image: traefik:v3.1
+    container_name: traefik-gateway
+    command:
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.file.filename=/etc/traefik/tls-config.yml
+      - --providers.file.watch=true
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./cert:/etc/traefik/certs:ro
+      - ./traefik-tls-config.yml:/etc/traefik/tls-config.yml:ro
+    networks:
+      - web
+    restart: unless-stopped
+
+  auto-mock:
+    build:
+      context: ./auto-mock
+      dockerfile: Dockerfile
+    container_name: auto-mock
+    environment:
+      - PORT=3100
+    volumes:
+      - ./auto-mock/autobank.db:/app/autobank.db
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.auto-mock.rule=Host(`autobank.huayteenoi.com`)
+      - traefik.http.routers.auto-mock.entrypoints=websecure
+      - traefik.http.routers.auto-mock.tls=true
+      - traefik.http.routers.auto-mock-http.rule=Host(`autobank.huayteenoi.com`)
+      - traefik.http.routers.auto-mock-http.entrypoints=web
+      - traefik.http.routers.auto-mock-http.middlewares=redirect-https@file
+      - traefik.http.services.auto-mock.loadbalancer.server.port=3100
+    networks:
+      - web
+    restart: unless-stopped
+
+  payonex-mock:
+    build:
+      context: ./payonex-mock
+      dockerfile: Dockerfile
+    container_name: payonex-mock
+    environment:
+      - PORT=3101
+    volumes:
+      - ./payonex-mock/payonex.db:/app/payonex.db
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.payonex-mock.rule=Host(`payonex.huayteenoi.com`)
+      - traefik.http.routers.payonex-mock.entrypoints=websecure
+      - traefik.http.routers.payonex-mock.tls=true
+      - traefik.http.routers.payonex-mock-http.rule=Host(`payonex.huayteenoi.com`)
+      - traefik.http.routers.payonex-mock-http.entrypoints=web
+      - traefik.http.routers.payonex-mock-http.middlewares=redirect-https@file
+      - traefik.http.services.payonex-mock.loadbalancer.server.port=3101
+    networks:
+      - web
+    restart: unless-stopped
+
+  worldpayz-mock:
+    build:
+      context: ./worldpayz-mock
+      dockerfile: Dockerfile
+    container_name: worldpayz-mock
+    environment:
+      - PORT=3102
+    volumes:
+      - ./worldpayz-mock/worldpayz.db:/app/worldpayz.db
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.worldpayz-mock.rule=Host(`worldpayz.huayteenoi.com`)
+      - traefik.http.routers.worldpayz-mock.entrypoints=websecure
+      - traefik.http.routers.worldpayz-mock.tls=true
+      - traefik.http.routers.worldpayz-mock-http.rule=Host(`worldpayz.huayteenoi.com`)
+      - traefik.http.routers.worldpayz-mock-http.entrypoints=web
+      - traefik.http.routers.worldpayz-mock-http.middlewares=redirect-https@file
+      - traefik.http.services.worldpayz-mock.loadbalancer.server.port=3102
+    networks:
+      - web
+    restart: unless-stopped
+
+networks:
+  web:
+    name: auto-webhook-network

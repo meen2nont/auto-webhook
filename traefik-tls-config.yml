@@ -1,0 +1,19 @@
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/cert.pem
+        keyFile: /etc/traefik/certs/key.pem
+  certificates:
+    - certFile: /etc/traefik/certs/cert.pem
+      keyFile: /etc/traefik/certs/key.pem
+      stores:
+        - default
+
+http:
+  middlewares:
+    redirect-https:
+      redirectScheme:
+        scheme: https
+        port: "443"
+        permanent: true
