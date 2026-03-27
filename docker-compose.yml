@@ -74,6 +74,7 @@ services:
     container_name: worldpayz-mock
     environment:
       - PORT=3102
+      - WORLDPAYZ_WEBHOOK_URL=https://stadev-api.huayteenoi.com/worldpayz/webhook
     volumes:
       - ./worldpayz-mock/worldpayz.db:/app/worldpayz.db
     labels:

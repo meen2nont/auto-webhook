@@ -197,6 +197,8 @@ const init = () => {
     )`);
 
     const now = new Date().toISOString();
+    const seedCallbackUrl = process.env.WORLDPAYZ_WEBHOOK_URL || null;
+    const seedWebhookSecret = process.env.WORLDPAYZ_WEBHOOK_SECRET || null;
     db.run(
       `INSERT OR IGNORE INTO merchants (
         id, merchant_code, name, provider, bank_code, bank_account_number,
@@ -211,8 +213,8 @@ const init = () => {
         'SCB',
         '6123013742',
         'Worldpayz Mock Merchant',
-        null,
-        null,
+        seedCallbackUrl,
+        seedWebhookSecret,
         'WORLDPAYZ_MOCK_API_KEY',
         'WORLDPAYZ_MOCK_SECRET_KEY',
         1,
@@ -230,6 +232,19 @@ const init = () => {
        WHERE merchant_code = 'WPMOCK001'`,
       ['WORLDPAYZ_MOCK_API_KEY', 'WORLDPAYZ_MOCK_SECRET_KEY', now]
     );
+
+    if (seedCallbackUrl) {
+      db.run(
+        `UPDATE merchants SET callback_url = ?, updated_at = ? WHERE merchant_code = 'WPMOCK001'`,
+        [seedCallbackUrl, now]
+      );
+    }
+    if (seedWebhookSecret) {
+      db.run(
+        `UPDATE merchants SET webhook_secret = ?, updated_at = ? WHERE merchant_code = 'WPMOCK001'`,
+        [seedWebhookSecret, now]
+      );
+    }
   });
 };
 

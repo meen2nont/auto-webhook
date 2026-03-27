@@ -163,8 +163,8 @@ const fixedTimeCompare = (left, right) => {
 };
 
 const bodyForSignature = (body) => {
-  const parsedBody = body && Object.keys(body).length > 0 ? body : '';
-  return JSON.stringify(parsedBody);
+  if (!body || Object.keys(body).length === 0) return '';
+  return JSON.stringify(body);
 };
 
 const buildFullUrl = (req) => `${req.protocol}://${req.get('host')}${req.originalUrl}`;
