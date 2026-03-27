@@ -12,15 +12,29 @@ const API_KEY = '1DE8FEF2BFE950C1B5B5ACF9506C418B222DE75D3B3406F84AAEAC56E9B2BB4
 const MERCHANT_ID = 'EXT-2026-A4AF29964BC3';
 const AUTOBANK_WITHDRAW_WEBHOOK_DELAY_MS = Number(process.env.AUTOBANK_WITHDRAW_WEBHOOK_DELAY_MS || 5000);
 const AUTOBANK_WITHDRAW_WEBHOOK_URL = 'https://api.gametester.win/autobank/webhook'; // Set this to your actual webhook URL if you want to receive callbacks
+const AUTOBANK_BASE_PATHS = ['/api/v2/autobank', '/autobank', ''];
+
+const registerAutobankRoute = (method, path, handler) => {
+  AUTOBANK_BASE_PATHS.forEach((basePath) => {
+    const routePath = `${basePath}${path}` || '/';
+    app[method](routePath, handler);
+  });
+};
+
 app.use((req, res, next) => {
   // ไม่ตรวจสอบ favicon
   if (req.path === '/favicon.ico') return next();
   const apiKey = req.header('X-API-Key');
   const merchantId = req.header('X-Merchant-ID');
+
+  console.log(`[AUTH] Incoming request to ${req.path} with API Key: ${apiKey}, Merchant ID: ${merchantId}`);
+
   if (!apiKey || !merchantId) {
+    console.warn('[AUTH] Missing authentication headers');
     return res.status(401).json({ status: 'error', message: 'Missing authentication headers' });
   }
   if (apiKey !== API_KEY || merchantId !== MERCHANT_ID) {
+    console.warn('[AUTH] Invalid API key or merchant ID');
     return res.status(403).json({ status: 'error', message: 'Invalid API key or merchant ID' });
   }
   next();
@@ -103,10 +117,10 @@ const schedulePayoutAutoComplete = (payout, callbackUrl) => {
 };
 
 // 1. Connection Test
-app.get('/api/v2/autobank/me', (req, res) => res.json({ status: 'success', message: 'connect success' }));
+registerAutobankRoute('get', '/me', (req, res) => res.json({ status: 'success', message: 'connect success' }));
 
 // 2. Customer Management
-app.post('/api/v2/autobank/customer/create', (req, res) => {
+registerAutobankRoute('post', '/customer/create', (req, res) => {
 
   console.log({ body: req.body });
 
@@ -172,7 +186,7 @@ app.post('/api/v2/autobank/customer/create', (req, res) => {
 });
 
 // 3. Bank Account Management
-app.post('/api/v2/autobank/register', (req, res) => {
+registerAutobankRoute('post', '/register', (req, res) => {
   const required = ["system", "bank_type", "agent_type", "agent_bank", "agent_accid", "agent_accname", "agent_userbank", "agent_passbank", "mobile_no"];
   const missing = required.filter(k => !req.body[k]);
   if (missing.length > 0) {
@@ -206,7 +220,7 @@ app.post('/api/v2/autobank/register', (req, res) => {
 });
 
 
-app.get('/api/v2/autobank/list', (req, res) => {
+registerAutobankRoute('get', '/list', (req, res) => {
   autobankDb.listMerchantBanks((err, rows) => {
     if (err) return res.status(500).json({ status: "error", message: "DB error", errors: err });
     res.json({
@@ -224,7 +238,7 @@ app.get('/api/v2/autobank/list', (req, res) => {
 });
 
 
-app.put('/api/v2/autobank/update', (req, res) => {
+registerAutobankRoute('put', '/update', (req, res) => {
   const { bank_id, agent_accname, mobile_no } = req.body;
   if (!bank_id || !agent_accname || !mobile_no) {
     return res.status(400).json({ status: "error", message: "Validation failed", errors: { missing: [!bank_id ? "bank_id" : null, !agent_accname ? "agent_accname" : null, !mobile_no ? "mobile_no" : null].filter(Boolean) } });
@@ -237,7 +251,7 @@ app.put('/api/v2/autobank/update', (req, res) => {
 });
 
 
-app.delete('/api/v2/autobank/delete', (req, res) => {
+registerAutobankRoute('delete', '/delete', (req, res) => {
   const { bank_id } = req.body;
   if (!bank_id) return res.status(400).json({ status: "error", message: "Validation failed", errors: { missing: ["bank_id"] } });
   autobankDb.deleteMerchantBank(bank_id, (err, changes) => {
@@ -269,8 +283,9 @@ app.post('/webhook/withdrawal', (req, res) => {
   res.json(req.body);
 });
 
-// 6. Check Deposit Status
-app.post('/api/v2/autobank/payout', (req, res) => {
+
+// 6. Payout (Withdraw)
+registerAutobankRoute('post', '/payout', (req, res) => {
   const { merchant_bank_id, custom_username, amount, callback_url } = req.body;
   if (!merchant_bank_id || !custom_username || !amount) {
     return res.status(400).json({ status: "error", message: "Validation failed", errors: { missing: [!merchant_bank_id ? "merchant_bank_id" : null, !custom_username ? "custom_username" : null, !amount ? "amount" : null].filter(Boolean) } });
@@ -304,7 +319,33 @@ app.post('/api/v2/autobank/payout', (req, res) => {
   });
 });
 
-// 7. Default error
+// 7. Check Deposit Status
+registerAutobankRoute('get', '/deposit/status', (req, res) => {
+  const { deposit_id } = req.query;
+  if (!deposit_id) {
+    return res.status(400).json({ status: 'error', message: 'Validation failed', errors: { missing: ['deposit_id'] } });
+  }
+  autobankDb.findDepositById(deposit_id, (err, row) => {
+    if (err) return res.status(500).json({ status: 'error', message: 'DB error', errors: err });
+    if (!row) return res.status(404).json({ status: 'error', message: 'Deposit not found' });
+    res.json({
+      status: 'success',
+      data: {
+        deposit_id: row.deposit_id,
+        member_username: row.member_username,
+        amount: row.amount,
+        status: row.status,
+        bank: row.bank,
+        account_id: row.account_id,
+        create_date: row.create_date,
+        update_date: row.create_date,
+        remark: row.message || ''
+      }
+    });
+  });
+});
+
+// 8. Default error
 app.use((req, res) => res.status(404).json({ status: "error", message: "Not found" }));
 
 autobankDb.init();
