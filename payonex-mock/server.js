@@ -17,7 +17,7 @@ const tokens = new Map();
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const DEPOSIT_WEBHOOK_DELAY_MS = Number(process.env.PAYONEX_DEPOSIT_WEBHOOK_DELAY_MS || 5000);
 const WITHDRAW_WEBHOOK_DELAY_MS = Number(process.env.PAYONEX_WITHDRAW_WEBHOOK_DELAY_MS || 5000);
-const PAYONEX_WEBHOOK_URL = 'https://api.gametester.win/payonex/webhook'; // Set this to your actual webhook URL if you want to receive callbacks
+const PAYONEX_WEBHOOK_URL = 'https://stadev-api.huayteenoi.com/payonex/webhook'; // Set this to your actual webhook URL if you want to receive callbacks
 
 // ─── Auth Middleware ─────────────────────────────────────────────────────────
 const requireAuth = (req, res, next) => {
@@ -491,7 +491,7 @@ app.post('/transactions/deposit/request', requireAuth, (req, res) => {
         const port = process.env.PORT || 3101;
         ok(res, {
           uuid: tx.uuid,
-          link: `http://localhost:${port}/pay/${tx.uuid}${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`,
+          link: `https://stadev-play.huayteenoi.com/pay/${tx.uuid}${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`,
           qrCode: tx.qrCode,
           qrBase64: 'data:image/png;base64,MOCK_QR_BASE64'
         });
