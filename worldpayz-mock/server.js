@@ -319,8 +319,8 @@ const getPaymentAddress = (payment) => {
 };
 
 const paymentSummary = (payment, merchant = FALLBACK_MERCHANT) => {
-  const fee = Number((payment.payment_amount * 0.014).toFixed(6));
-  const merchantAmount = Number((payment.payment_amount - fee).toFixed(6));
+  const fee = Number((payment.payment_amount * 0.014).toFixed(2));
+  const merchantAmount = Number((payment.payment_amount - fee).toFixed(2));
   const bankInfo = BANK_CONFIGS[payment.payer_bank_provider];
   const isFiat = payment.invoice_type === 'FIAT';
   const merchantInfo = merchant || FALLBACK_MERCHANT;
@@ -407,7 +407,7 @@ const buildWebhookPayload = (payment, transaction) => {
   const event = isCanceled ? 'PAYMENT_CANCELED' : 'PAYMENT_PAID';
   const webhookStatus = isCanceled ? 'CANCELED' : normalizedStatus;
   const webhookPaymentStatus = isCanceled ? 'PAYMENT_CANCELED' : 'PAYMENT_PAID';
-  const merchantAmount = Number((payment.payment_amount * 0.986).toFixed(6));
+  const merchantAmount = Number((payment.payment_amount * 0.986).toFixed(2));
 
   const paymentData = isCanceled
     ? {
@@ -446,7 +446,7 @@ const buildWebhookPayload = (payment, transaction) => {
       address: getPaymentAddress(payment) || '0x00',
       fx_rate: {
         THB: payment.payment_amount,
-        USD: Number((payment.payment_amount / 31.5).toFixed(3))
+        USD: Number((payment.payment_amount / 31.5).toFixed(2))
       },
       network: payment.network,
       seq_num: payment.seq_num,
@@ -683,27 +683,27 @@ const buildPaymentRecord = (body, mode) => {
 const appendHistory = (history, entry) => [...(history || []), entry];
 
 const buildWithdrawalFxRate = (amount) => ({
-  AED: Number((amount * 0.1138).toFixed(3)),
-  CNY: Number((amount * 0.22058).toFixed(3)),
-  EUR: Number((amount * 0.02643).toFixed(3)),
-  GBP: Number((amount * 0.023).toFixed(3)),
-  HKD: Number((amount * 0.2411).toFixed(3)),
-  IDR: Number((amount * 516.14692).toFixed(3)),
-  INR: Number((amount * 2.74661).toFixed(3)),
-  JPY: Number((amount * 4.56108).toFixed(3)),
-  KRW: Number((amount * 43.45123).toFixed(3)),
-  RUB: Number((amount * 2.556).toFixed(3)),
-  SGD: Number((amount * 0.03992).toFixed(3)),
-  THB: Number((amount * 1.005).toFixed(3)),
-  USD: Number((amount * 1.005).toFixed(3))
+  AED: Number((amount * 0.1138).toFixed(2)),
+  CNY: Number((amount * 0.22058).toFixed(2)),
+  EUR: Number((amount * 0.02643).toFixed(2)),
+  GBP: Number((amount * 0.023).toFixed(2)),
+  HKD: Number((amount * 0.2411).toFixed(2)),
+  IDR: Number((amount * 516.14692).toFixed(2)),
+  INR: Number((amount * 2.74661).toFixed(2)),
+  JPY: Number((amount * 4.56108).toFixed(2)),
+  KRW: Number((amount * 43.45123).toFixed(2)),
+  RUB: Number((amount * 2.556).toFixed(2)),
+  SGD: Number((amount * 0.03992).toFixed(2)),
+  THB: Number((amount * 1.005).toFixed(2)),
+  USD: Number((amount * 1.005).toFixed(2))
 });
 
 const buildWithdrawalRecord = (body, mode, requestIp) => {
   const now = new Date().toISOString();
   const amount = Number(body.amount);
   const withdrawFeePercent = 0.5;
-  const withdrawFeeAmount = Number((amount * (withdrawFeePercent / 100)).toFixed(6));
-  const realizedAmount = Number((amount - withdrawFeeAmount).toFixed(6));
+  const withdrawFeeAmount = Number((amount * (withdrawFeePercent / 100)).toFixed(2));
+  const realizedAmount = Number((amount - withdrawFeeAmount).toFixed(2));
   const isFiat = mode === 'fiat';
   const exchangeRate = body.currency === 'THB' ? 0.030829 : 1;
   return {
@@ -727,7 +727,7 @@ const buildWithdrawalRecord = (body, mode, requestIp) => {
     fee_amount: withdrawFeeAmount,
     extra_fee_network: 0,
     realized_amount: realizedAmount,
-    tx_value: Number((realizedAmount * exchangeRate).toFixed(7)),
+    tx_value: Number((realizedAmount * exchangeRate).toFixed(2)),
     fx_rate: buildWithdrawalFxRate(amount),
     exchange_rate: exchangeRate,
     exchange_rate_raw: {
@@ -889,7 +889,7 @@ const withdrawalDetail = (withdrawal) => {
     address: withdrawal.address,
     fx_rate: {
       THB: netAmount,
-      USD: Number((netAmount * 0.0317).toFixed(3))
+      USD: Number((netAmount * 0.0317).toFixed(2))
     },
     network: requestData.network || 'mainnet',
     seq_num: withdrawal.seq_num,
