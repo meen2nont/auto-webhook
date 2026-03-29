@@ -362,17 +362,51 @@ app.get('/profile/balance', requireAuth, (req, res) => {
 
 // PUT /profile/settings
 app.put('/profile/settings', requireAuth, (req, res) => {
-  const { minDeposit, maxWithdraw } = req.body || {};
-  if (minDeposit === undefined || maxWithdraw === undefined) {
-    return fail(res, 'minDeposit and maxWithdraw are required', '40001');
+  const body = req.body || {};
+  const hasMinDeposit = body.minDeposit !== undefined;
+  const hasMaxWithdraw = body.maxWithdraw !== undefined;
+  const hasDepositFee = body.depositFee !== undefined || body.deposit_fee !== undefined;
+  const hasWithdrawFee = body.withdrawFee !== undefined || body.withdraw_fee !== undefined;
+
+  if (!hasMinDeposit && !hasMaxWithdraw && !hasDepositFee && !hasWithdrawFee) {
+    return fail(res, 'At least one setting is required', '40001');
   }
-  if (minDeposit < 20 || minDeposit > 1000000) {
-    return fail(res, 'minDeposit must be between 20 and 1000000', '40001');
+
+  const nextSettings = {};
+
+  if (hasMinDeposit) {
+    const minDeposit = Number(body.minDeposit);
+    if (!Number.isFinite(minDeposit) || minDeposit < 20 || minDeposit > 1000000) {
+      return fail(res, 'minDeposit must be between 20 and 1000000', '40001');
+    }
+    nextSettings.minDeposit = minDeposit;
   }
-  if (maxWithdraw < 100 || maxWithdraw > 1000000) {
-    return fail(res, 'maxWithdraw must be between 100 and 1000000', '40001');
+
+  if (hasMaxWithdraw) {
+    const maxWithdraw = Number(body.maxWithdraw);
+    if (!Number.isFinite(maxWithdraw) || maxWithdraw < 100 || maxWithdraw > 1000000) {
+      return fail(res, 'maxWithdraw must be between 100 and 1000000', '40001');
+    }
+    nextSettings.maxWithdraw = maxWithdraw;
   }
-  db.updateMerchantSettings(minDeposit, maxWithdraw, (err) => {
+
+  if (hasDepositFee) {
+    const depositFee = Number(body.depositFee !== undefined ? body.depositFee : body.deposit_fee);
+    if (!Number.isFinite(depositFee) || depositFee < 0 || depositFee > 100) {
+      return fail(res, 'depositFee must be between 0 and 100', '40001');
+    }
+    nextSettings.depositFee = depositFee;
+  }
+
+  if (hasWithdrawFee) {
+    const withdrawFee = Number(body.withdrawFee !== undefined ? body.withdrawFee : body.withdraw_fee);
+    if (!Number.isFinite(withdrawFee) || withdrawFee < 0 || withdrawFee > 100) {
+      return fail(res, 'withdrawFee must be between 0 and 100', '40001');
+    }
+    nextSettings.withdrawFee = withdrawFee;
+  }
+
+  db.updateMerchantSettings(nextSettings, (err) => {
     if (err) return fail(res, 'Internal error', '50000', 500);
     db.getMerchant((err2, merchant) => {
       if (err2 || !merchant) return fail(res, 'Internal error', '50000', 500);
@@ -380,7 +414,9 @@ app.put('/profile/settings', requireAuth, (req, res) => {
         partner: merchant.partner,
         clientCode: merchant.clientCode,
         minDeposit: merchant.minDeposit,
-        maxWithdraw: merchant.maxWithdraw
+        maxWithdraw: merchant.maxWithdraw,
+        depositFee: Number(merchant.deposit_fee || 0),
+        withdrawFee: Number(merchant.withdraw_fee || 0)
       });
     });
   });
@@ -479,7 +515,7 @@ app.post('/transactions/deposit/request', requireAuth, (req, res) => {
       if (amount < merchant.minDeposit) {
         return fail(res, `Amount below minimum deposit of ${merchant.minDeposit}`, '40004');
       }
-      db.createTransaction({ customerUuid, amount, type: 'deposit', referenceId, note, remark }, (err3, tx) => {
+      db.createTransaction({ customerUuid, amount, type: 'deposit', feeRate: merchant.deposit_fee, referenceId, note, remark }, (err3, tx) => {
         if (err3) return fail(res, 'Internal error', '50000', 500);
         console.log('[DEPOSIT REQUEST RECEIVED]', JSON.stringify({
           tx_uuid: tx.uuid,
@@ -491,7 +527,7 @@ app.post('/transactions/deposit/request', requireAuth, (req, res) => {
         const port = process.env.PORT || 3101;
         ok(res, {
           uuid: tx.uuid,
-          link: `https://stadev-play.huayteenoi.com/pay/${tx.uuid}${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`,
+          link: `https://api.payonex.asia/pay/${tx.uuid}${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`,
           qrCode: tx.qrCode,
           qrBase64: 'data:image/png;base64,MOCK_QR_BASE64'
         });
@@ -513,16 +549,17 @@ app.post('/transactions/withdraw/request', requireAuth, (req, res) => {
 
     db.getMerchant((err2, merchant) => {
       if (err2 || !merchant) return fail(res, 'Internal error', '50000', 500);
+      const estimatedFee = Number(((Number(amount) * Number(merchant.withdraw_fee || 0)) / 100).toFixed(2));
       if (amount > merchant.maxWithdraw) {
         return fail(res, `Amount exceeds maximum withdraw of ${merchant.maxWithdraw}`, '40005');
       }
-      if (amount > merchant.balance) {
+      if ((Number(amount) + estimatedFee) > merchant.balance) {
         return fail(res, 'Insufficient merchant balance', '40006');
       }
-      db.createTransaction({ customerUuid, amount, type: 'withdraw', referenceId, note, remark }, (err3, tx) => {
+      db.createTransaction({ customerUuid, amount, type: 'withdraw', feeRate: merchant.withdraw_fee, referenceId, note, remark }, (err3, tx) => {
         if (err3) return fail(res, 'Internal error', '50000', 500);
         // Deduct balance immediately on payout
-        db.updateMerchantBalance(-amount, () => {});
+        db.updateMerchantBalance(-(tx.amount + tx.fee), () => {});
         scheduleWithdrawAutoComplete(tx.uuid, callbackUrl);
         ok(res, { uuid: tx.uuid });
       });

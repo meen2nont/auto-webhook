@@ -41,3 +41,7 @@ cert/
 
 # Test artifacts
 worldpayz-mock/smoke-output.txt
+auto-mock/autobank.db
+payonex-mock/payonex.db
+worldpayz-mock/package-lock.json
+worldpayz-mock/worldpayz.db

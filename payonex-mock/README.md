@@ -76,10 +76,12 @@ Response:
 
 **GET** `/profile/balance` — ยอดเงินคงเหลือ
 
-**PUT** `/profile/settings` — ตั้งค่า min/max
+**PUT** `/profile/settings` — ตั้งค่า min/max และ fee rate
 ```json
-{ "minDeposit": 100, "maxWithdraw": 200000 }
+{ "minDeposit": 100, "maxWithdraw": 200000, "depositFee": 1.6, "withdrawFee": 0 }
 ```
+
+รองรับ `deposit_fee` และ `withdraw_fee` แบบ snake_case ด้วย
 
 ---
 
@@ -160,8 +162,8 @@ Response:
 
 | Rule | Value |
 |------|-------|
-| Fee (deposit) | 1.6% ของ amount |
-| Fee (withdraw) | 0 |
+| Fee (deposit) | configurable, default 1.6% ของ amount |
+| Fee (withdraw) | configurable, default 0% ของ amount |
 | Token TTL | 24 ชั่วโมง |
 | ยอดเริ่มต้น merchant | 100,000 THB |
 | Min deposit (default) | 100 THB |
