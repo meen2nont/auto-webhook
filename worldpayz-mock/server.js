@@ -401,27 +401,29 @@ const paymentSummary = (payment, merchant = FALLBACK_MERCHANT) => {
   };
 };
 
-const buildWebhookPayload = (payment, transaction) => ({
-  event: 'PAYMENT_PAID',
-  type: payment.invoice_type,
-  data: {
-    payment: {
+const buildWebhookPayload = (payment, transaction) => {
+  const normalizedStatus = String(payment.status || '').toUpperCase();
+  const isCanceled = normalizedStatus === 'CANCELLED' || normalizedStatus === 'CANCELED';
+  const event = isCanceled ? 'PAYMENT_CANCELED' : 'PAYMENT_PAID';
+  const webhookStatus = isCanceled ? 'CANCELED' : normalizedStatus;
+  const webhookPaymentStatus = isCanceled ? 'PAYMENT_CANCELED' : 'PAYMENT_PAID';
+  const merchantAmount = Number((payment.payment_amount * 0.986).toFixed(6));
+
+  const paymentData = isCanceled
+    ? {
       id: payment.id,
-      txid: `mock-${payment.id}`,
+      txid: '0x00',
       chain: payment.chain,
       amount: payment.amount,
-      status: payment.status,
+      status: webhookStatus,
       address: getPaymentAddress(payment) || '0x00',
-      fx_rate: {
-        THB: payment.payment_amount,
-        USD: Number((payment.payment_amount / 31.5).toFixed(3))
-      },
+      fx_rate: null,
       network: payment.network,
       seq_num: payment.seq_num,
-      agent_id: 'WORLDPAYZ-MOCK-AGENT',
+      agent_id: 'aacc3472-f3c3-49bb-9040-d5a6aff283bf',
       lifetime: payment.lifetime,
       order_id: payment.order_id,
-      source_id: payment.source_id,
+      source_id: 'payment',
       created_at: payment.created_at,
       expired_at: payment.expired_at,
       updated_at: payment.updated_at,
@@ -429,16 +431,56 @@ const buildWebhookPayload = (payment, transaction) => ({
       from_currency: payment.from_currency,
       failed_reason: payment.failed_reason || 'UNKNOWN',
       payment_amount: payment.payment_amount,
-      payment_status: payment.payment_status,
-      merchant_amount: Number((payment.payment_amount * 0.986).toFixed(6)),
+      payment_status: webhookPaymentStatus,
+      merchant_amount: merchantAmount,
+      payer_bank_provider: payment.payer_bank_provider,
+      payer_paid_currency: payment.to_currency,
+      order_user_reference: payment.order_user_reference
+    }
+    : {
+      id: payment.id,
+      txid: '0x00',
+      chain: payment.chain,
+      amount: payment.amount,
+      status: webhookStatus,
+      address: getPaymentAddress(payment) || '0x00',
+      fx_rate: {
+        THB: payment.payment_amount,
+        USD: Number((payment.payment_amount / 31.5).toFixed(3))
+      },
+      network: payment.network,
+      seq_num: payment.seq_num,
+      agent_id: 'aacc3472-f3c3-49bb-9040-d5a6aff283bf',
+      lifetime: payment.lifetime,
+      order_id: payment.order_id,
+      source_id: 'payment',
+      created_at: payment.created_at,
+      expired_at: payment.expired_at,
+      updated_at: payment.updated_at,
+      to_currency: payment.to_currency,
+      from_currency: payment.from_currency,
+      failed_reason: payment.failed_reason || 'UNKNOWN',
+      payment_amount: payment.payment_amount,
+      payment_status: webhookPaymentStatus,
+      merchant_amount: merchantAmount,
       payer_paid_amount: payment.payment_amount,
       payer_bank_provider: payment.payer_bank_provider,
       payer_paid_currency: payment.to_currency,
       payer_bank_account_name: payment.payer_bank_account_name,
       payer_bank_account_number: payment.payer_bank_account_number,
       order_user_reference: payment.order_user_reference
-    },
-    transaction: transaction ? {
+    };
+
+  const payload = {
+    event,
+    type: payment.invoice_type,
+    data: {
+      payment: paymentData
+    }
+  };
+
+  if (!isCanceled && transaction) {
+    payload.data.transaction = {
       id: transaction.id,
       fee: transaction.fee,
       type: transaction.type,
@@ -459,9 +501,11 @@ const buildWebhookPayload = (payment, transaction) => ({
       from_address: transaction.from_address,
       realized_amount: transaction.realized_amount,
       order_user_reference: payment.order_user_reference
-    } : null
+    };
   }
-});
+
+  return payload;
+};
 
 const postJson = (urlString, payload, extraHeaders = {}) => new Promise((resolve, reject) => {
   const target = new URL(urlString);
@@ -530,14 +574,24 @@ const sendWebhookIfConfigured = async (payment, transaction, merchant) => {
   return { sent: true, destination, result };
 };
 
-const buildWithdrawalWebhookPayload = (withdrawal) => ({
-  event: 'WITHDRAWAL_COMPLETED',
-  type: withdrawal.withdrawal_mode,
-  data: {
-    withdrawal: withdrawalDetail(withdrawal),
-    callback_sent_at: new Date().toISOString()
-  }
-});
+const buildWithdrawalWebhookPayload = (withdrawal) => {
+  const status = String(withdrawal.status || '').toUpperCase();
+  const event = status === 'REJECTED'
+    ? 'WITHDRAWAL_REJECTED'
+    : status === 'COMPLETED'
+      ? 'WITHDRAWAL_COMPLETED'
+      : status === 'APPROVED'
+        ? 'WITHDRAWAL_APPROVED'
+        : 'WITHDRAWAL_PENDING';
+
+  return {
+    event,
+    type: withdrawal.withdrawal_mode,
+    data: {
+      withdrawal: withdrawalDetail(withdrawal)
+    }
+  };
+};
 
 const sendWithdrawalWebhookIfConfigured = async (withdrawal, merchant) => {
   const destination = withdrawal.callback_url || WEBHOOK_URL;
@@ -647,6 +701,9 @@ const buildWithdrawalFxRate = (amount) => ({
 const buildWithdrawalRecord = (body, mode, requestIp) => {
   const now = new Date().toISOString();
   const amount = Number(body.amount);
+  const withdrawFeePercent = 0.5;
+  const withdrawFeeAmount = Number((amount * (withdrawFeePercent / 100)).toFixed(6));
+  const realizedAmount = Number((amount - withdrawFeeAmount).toFixed(6));
   const isFiat = mode === 'fiat';
   const exchangeRate = body.currency === 'THB' ? 0.030829 : 1;
   return {
@@ -666,11 +723,11 @@ const buildWithdrawalRecord = (body, mode, requestIp) => {
     amount: String(body.amount),
     withdrawal_amount: amount,
     fee_model_type: 'PERCENTAGE',
-    fee: 0,
-    fee_amount: 0,
+    fee: withdrawFeePercent,
+    fee_amount: withdrawFeeAmount,
     extra_fee_network: 0,
-    realized_amount: amount,
-    tx_value: Number((amount * exchangeRate).toFixed(7)),
+    realized_amount: realizedAmount,
+    tx_value: Number((realizedAmount * exchangeRate).toFixed(7)),
     fx_rate: buildWithdrawalFxRate(amount),
     exchange_rate: exchangeRate,
     exchange_rate_raw: {
@@ -730,10 +787,10 @@ const withdrawalSummary = (withdrawal) => {
   const requestData = withdrawal.request_data || {};
   const bankInfo = BANK_CONFIGS[withdrawal.receiver_bank];
   const statusMap = {
-    'COMPLETED': 'WITHDRAWAL_COMPLETE',
-    'APPROVED': 'WITHDRAWAL_APPROVED',
-    'REJECTED': 'WITHDRAWAL_REJECTED',
-    'PENDING': 'WITHDRAWAL_PENDING'
+    'COMPLETED': 'COMPLETED',
+    'APPROVED': 'APPROVED',
+    'REJECTED': 'REJECTED',
+    'PENDING': 'PENDING'
   };
   return {
     id: withdrawal.id,
@@ -811,65 +868,53 @@ const withdrawalSummary = (withdrawal) => {
 
 const withdrawalDetail = (withdrawal) => {
   const requestData = withdrawal.request_data || {};
-  const bankInfo = BANK_CONFIGS[withdrawal.receiver_bank];
+  const requestedAmount = Number(withdrawal.withdrawal_amount ?? withdrawal.amount ?? 0);
+  const feeAmount = Number(withdrawal.fee_amount ?? 0);
+  const netAmount = Number(Math.max(requestedAmount - feeAmount, 0).toFixed(2));
+  const additional = withdrawal.additional && typeof withdrawal.additional === 'object' && Object.keys(withdrawal.additional).length > 0
+    ? withdrawal.additional
+    : undefined;
   const statusMap = {
-    'COMPLETED': 'WITHDRAWAL_COMPLETE',
-    'APPROVED': 'WITHDRAWAL_APPROVED',
-    'REJECTED': 'WITHDRAWAL_REJECTED',
-    'PENDING': 'WITHDRAWAL_PENDING'
+    'COMPLETED': 'COMPLETED',
+    'APPROVED': 'APPROVED',
+    'REJECTED': 'REJECTED',
+    'PENDING': 'PENDING'
   };
 
-  return {
+  const payload = {
     id: withdrawal.id,
-    seq_num: withdrawal.seq_num,
-    order_id: withdrawal.order_id,
-    order_user_reference: withdrawal.order_user_reference,
-    amount: withdrawal.amount,
-    withdrawal_amount: withdrawal.withdrawal_amount,
-    currency: withdrawal.currency,
-    fee: withdrawal.fee_amount,
-    fee_model: withdrawal.fee_model_type,
-    net_amount: withdrawal.realized_amount,
-    from_currency: withdrawal.currency,
-    to_currency: withdrawal.currency,
-    recipient_detail: {
-      type: withdrawal.withdrawal_mode.toUpperCase(),
-      bank_code: withdrawal.receiver_bank,
-      bank_name: bankInfo ? bankInfo.fullname_th : 'Unknown Bank',
-      bank_en_name: bankInfo ? bankInfo.name_en : 'Unknown',
-      account_number: withdrawal.address,
-      account_name: withdrawal.receiver_name,
-      address: withdrawal.address,
-      chain: requestData.chain || 'offchain',
-      network: requestData.network || 'mainnet',
-      asset_type: requestData.asset_type || 'native'
+    fee: feeAmount,
+    chain: requestData.chain || 'offchain',
+    amount: String(netAmount),
+    address: withdrawal.address,
+    fx_rate: {
+      THB: netAmount,
+      USD: Number((netAmount * 0.0317).toFixed(3))
     },
-    network_detail: withdrawal.exchange_rate_raw ? {
-      chain: requestData.chain,
-      network: requestData.network,
-      token_address: null,
-      gas_fee: withdrawal.extra_fee_network || 0,
-      estimated_time_minutes: withdrawal.withdrawal_mode === 'FIAT' ? 10 : 30
-    } : null,
-    withdrawal_status: statusMap[withdrawal.status] || 'WITHDRAWAL_PENDING',
-    is_completed: ['COMPLETED', 'REJECTED'].includes(withdrawal.status),
-    status: withdrawal.status,
-    requested_at: withdrawal.created_at,
-    approved_at: withdrawal.approved_at,
-    completed_at: withdrawal.completed_at,
+    network: requestData.network || 'mainnet',
+    seq_num: withdrawal.seq_num,
+    agent_id: withdrawal.agent_id,
+    currency: withdrawal.currency,
+    lifetime: withdrawal.lifetime,
+    order_id: withdrawal.order_id,
+    source_id: 'payment',
     created_at: withdrawal.created_at,
     updated_at: withdrawal.updated_at,
-    organization_id: withdrawal.organization_id,
-    agent_id: withdrawal.agent_id,
-    transaction_reference: withdrawal.transaction_reference,
-    transaction_history: (withdrawal.transaction_history || []).map(tx => ({
-      timestamp: tx.timestamp,
-      status: tx.status,
-      description: tx.description,
-      transaction_reference: tx.transaction_reference || null,
-      details: tx.details || null
-    }))
+    admin_notes: withdrawal.admin_notes,
+    approved_at: withdrawal.approved_at,
+    receiver_bank: withdrawal.receiver_bank,
+    receiver_name: withdrawal.receiver_name,
+    realized_amount: netAmount,
+    rejected_reason: withdrawal.rejected_reason,
+    withdrawal_status: statusMap[withdrawal.status] || 'PENDING',
+    order_user_reference: withdrawal.order_user_reference
   };
+
+  if (additional) {
+    payload.additional = additional;
+  }
+
+  return payload;
 };
 
 const applyWithdrawalState = (withdrawal, nextState, cb) => {
@@ -912,7 +957,8 @@ const applyWithdrawalState = (withdrawal, nextState, cb) => {
     patch = {
       status: 'REJECTED',
       withdrawal_status: 'WITHDRAWAL_REJECTED',
-      rejected_reason: 'REJECTED_BY_MOCK',
+      rejected_reason: 'UNKNOWN',
+      admin_notes: 'ระบบขัดข้องชั่วคราว',
       last_updated_at: now,
       updated_at: now,
       transaction_history: appendHistory(history, {
@@ -1295,7 +1341,7 @@ app.post('/v1/payment/cancel', requireSignatureAuth, (req, res) => {
   getPaymentWithTransaction(id, (err, payment, transaction) => {
     if (err) return failResponse(res, 500, 'Database error', 2500);
     if (!payment) return failResponse(res, 404, 'Payment not found', 2404);
-    if (payment.status === 'CANCELLED') {
+    if (payment.status === 'CANCELLED' || payment.status === 'CANCELED') {
       return res.json({ success: true, message: 'Payment cancelled successfully', data: { id: payment.id, status: 'cancelled', cancelled_at: payment.cancelled_at } });
     }
     if (transaction || (payment.is_completed && payment.status !== 'PENDING')) {
@@ -1304,16 +1350,30 @@ app.post('/v1/payment/cancel', requireSignatureAuth, (req, res) => {
 
     const cancelledAt = new Date().toISOString();
     db.updatePaymentState(id, {
-      payment_status: 'PAYMENT_CANCELLED',
-      payment_match_type: 'CANCELLED',
+      payment_status: 'PAYMENT_CANCELED',
+      payment_match_type: 'CANCELED',
       is_completed: 1,
-      status: 'CANCELLED',
+      status: 'CANCELED',
       cancelled_at: cancelledAt,
-      failed_reason: 'CANCELLED_BY_USER',
+      failed_reason: 'UNKNOWN',
       updated_at: cancelledAt
     }, (updateErr) => {
       if (updateErr) return failResponse(res, 500, 'Database error', 2500);
-      return res.json({ success: true, message: 'Payment cancelled successfully', data: { id, status: 'cancelled', cancelled_at: cancelledAt } });
+      db.findPaymentById(id, (findErr, updatedPayment) => {
+        if (findErr || !updatedPayment) {
+          return res.json({ success: true, message: 'Payment cancelled successfully', data: { id, status: 'cancelled', cancelled_at: cancelledAt } });
+        }
+        resolveMerchantFromRequest(req, async (merchantErr, merchant) => {
+          if (!merchantErr && merchant) {
+            try {
+              await sendWebhookIfConfigured(updatedPayment, null, merchant);
+            } catch (webhookErr) {
+              console.error('[payment-cancel webhook] error:', webhookErr.message);
+            }
+          }
+          return res.json({ success: true, message: 'Payment cancelled successfully', data: { id, status: 'cancelled', cancelled_at: cancelledAt } });
+        });
+      });
     });
   });
 });
@@ -1384,7 +1444,7 @@ app.get('/pay/:id', (req, res) => {
   getPaymentWithTransaction(req.params.id, (err, payment, transaction) => {
     if (err || !payment) return res.status(404).send('<h2>Payment not found</h2>');
 
-    const isLocked = Boolean(transaction) || payment.status === 'CANCELLED';
+    const isLocked = Boolean(transaction) || payment.status === 'CANCELLED' || payment.status === 'CANCELED';
     const actionButtons = isLocked
       ? '<p>รายการนี้ถูกสรุปสถานะแล้ว</p>'
       : `
@@ -1436,7 +1496,7 @@ app.get('/pay/:id', (req, res) => {
 app.post('/mock/payments/:id/confirm', (req, res) => {
   getPaymentWithTransaction(req.params.id, (err, payment, existingTransaction) => {
     if (err || !payment) return res.status(404).send('Payment not found');
-    if (payment.status === 'CANCELLED') return res.status(409).send('Payment already cancelled');
+    if (payment.status === 'CANCELLED' || payment.status === 'CANCELED') return res.status(409).send('Payment already cancelled');
 
     withActiveMerchant((merchantErr, merchant) => {
       if (merchantErr) return res.status(500).send('Database error');
@@ -1494,17 +1554,28 @@ app.post('/mock/payments/:id/cancel', (req, res) => {
     if (err || !payment) return res.status(404).send('Payment not found');
     if (transaction) return res.status(409).send('Completed payment cannot be cancelled');
     const cancelledAt = new Date().toISOString();
-    db.updatePaymentState(payment.id, {
-      payment_status: 'PAYMENT_CANCELLED',
-      payment_match_type: 'CANCELLED',
-      is_completed: 1,
-      status: 'CANCELLED',
-      cancelled_at: cancelledAt,
-      failed_reason: 'CANCELLED_BY_USER',
-      updated_at: cancelledAt
-    }, (updateErr) => {
-      if (updateErr) return res.status(500).send('Database error');
-      return res.send(`<h2>Payment cancelled</h2><p>Invoice ${payment.id} marked as CANCELLED</p>`);
+    withActiveMerchant(async (merchantErr, merchant) => {
+      if (merchantErr) return res.status(500).send('Database error');
+      db.updatePaymentState(payment.id, {
+        payment_status: 'PAYMENT_CANCELED',
+        payment_match_type: 'CANCELED',
+        is_completed: 1,
+        status: 'CANCELED',
+        cancelled_at: cancelledAt,
+        failed_reason: 'UNKNOWN',
+        updated_at: cancelledAt
+      }, (updateErr) => {
+        if (updateErr) return res.status(500).send('Database error');
+        db.findPaymentById(payment.id, async (findErr, updatedPayment) => {
+          if (findErr || !updatedPayment) return res.send(`<h2>Payment cancelled</h2><p>Invoice ${payment.id} marked as CANCELED</p>`);
+          try {
+            await sendWebhookIfConfigured(updatedPayment, null, merchant);
+          } catch (webhookErr) {
+            console.error('[mock-payment-cancel webhook] error:', webhookErr.message);
+          }
+          return res.send(`<h2>Payment cancelled</h2><p>Invoice ${payment.id} marked as CANCELED</p>`);
+        });
+      });
     });
   });
 });
@@ -1540,7 +1611,16 @@ app.post('/mock/withdrawals/:id/complete', (req, res) => {
     if (err || !withdrawal) return res.status(404).json({ success: false, message: 'Withdrawal not found' });
     applyWithdrawalState(withdrawal, 'complete', (updateErr, updated) => {
       if (updateErr) return res.status(500).json({ success: false, message: 'Database error' });
-      return res.json({ success: true, data: withdrawalSummary(updated) });
+      return withActiveMerchant(async (merchantErr, merchant) => {
+        if (!merchantErr && merchant) {
+          try {
+            await sendWithdrawalWebhookIfConfigured(updated, merchant);
+          } catch (webhookErr) {
+            console.error('[mock-withdrawal-complete webhook] error:', webhookErr.message);
+          }
+        }
+        return res.json({ success: true, data: withdrawalSummary(updated) });
+      });
     });
   });
 });
@@ -1550,7 +1630,16 @@ app.post('/mock/withdrawals/:id/reject', (req, res) => {
     if (err || !withdrawal) return res.status(404).json({ success: false, message: 'Withdrawal not found' });
     applyWithdrawalState(withdrawal, 'reject', (updateErr, updated) => {
       if (updateErr) return res.status(500).json({ success: false, message: 'Database error' });
-      return res.json({ success: true, data: withdrawalSummary(updated) });
+      return withActiveMerchant(async (merchantErr, merchant) => {
+        if (!merchantErr && merchant) {
+          try {
+            await sendWithdrawalWebhookIfConfigured(updated, merchant);
+          } catch (webhookErr) {
+            console.error('[mock-withdrawal-reject webhook] error:', webhookErr.message);
+          }
+        }
+        return res.json({ success: true, data: withdrawalSummary(updated) });
+      });
     });
   });
 });
