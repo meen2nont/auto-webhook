@@ -92,4 +92,5 @@ services:
 
 networks:
   web:
-    name: auto-webhook-network
+    name: lotto-network
+    external: true
