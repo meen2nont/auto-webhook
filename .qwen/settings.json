@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lsof *)",
+      "Bash(xargs *)"
+    ]
+  },
+  "$version": 4
+}

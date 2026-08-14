@@ -349,5 +349,5 @@ registerAutobankRoute('get', '/deposit/status', (req, res) => {
 app.use((req, res) => res.status(404).json({ status: "error", message: "Not found" }));
 
 autobankDb.init();
-const PORT = process.env.PORT || 3100;
+const PORT = process.env.PORT || 3103;
 app.listen(PORT, () => console.log(`Mock Autobank API running on port ${PORT}`));

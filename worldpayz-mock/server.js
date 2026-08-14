@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 
 const API_KEY = process.env.WORLDPAYZ_API_KEY || 'WORLDPAYZ_MOCK_API_KEY';
 const SECRET_KEY = process.env.WORLDPAYZ_SECRET_KEY || 'WORLDPAYZ_MOCK_SECRET_KEY';
-const PAYMENT_DOMAIN = process.env.WORLDPAYZ_PAYMENT_DOMAIN || 'https://worldpayz.huayteenoi.com';
+const PAYMENT_DOMAIN = process.env.WORLDPAYZ_PAYMENT_DOMAIN || 'http://localhost:3102';
 const WEBHOOK_URL = process.env.WORLDPAYZ_WEBHOOK_URL || '';
 const PAYMENT_WEBHOOK_DELAY_MS = Number(process.env.WORLDPAYZ_PAYMENT_WEBHOOK_DELAY_MS || 5000);
 const WITHDRAWAL_WEBHOOK_DELAY_MS = Number(process.env.WORLDPAYZ_WITHDRAWAL_WEBHOOK_DELAY_MS || 5000);
@@ -112,8 +112,8 @@ const FALLBACK_MERCHANT = {
   bank_code: 'SCB',
   bank_account_number: '6123013742',
   bank_account_name: 'Worldpayz Mock Merchant',
-  callback_url: 'https://stadev-api.huayteenoi.com/worldpayz/webhook',
-  webhook_secret: 'https://stadev-api.huayteenoi.com/worldpayz/webhook/verification-stats',
+  callback_url: 'http://localhost:3000/worldpayz/webhook',
+  webhook_secret: 'WORLDPAYZ_MOCK_SECRET_KEY',
   api_key: 'WORLDPAYZ_MOCK_API_KEY',
   secret_key: 'WORLDPAYZ_MOCK_SECRET_KEY',
   is_active: true,
@@ -246,7 +246,7 @@ const requireSignatureAuth = (req, res, next) => {
 
     if (!signatureValid) {
       // Try with localhost:3102 variant
-      const localhostUrl = `https://worldpayz.huayteenoi.com${req.originalUrl}`;
+      const localhostUrl = `http://localhost:3102${req.originalUrl}`;
       const expectedLocalhost = generateSignature(
         secretKeyUsed,
         req.method,
@@ -262,7 +262,7 @@ const requireSignatureAuth = (req, res, next) => {
 
     if (!signatureValid) {
       // Try with https variant
-      const httpsUrl = `https://worldpayz.huayteenoi.com${req.originalUrl}`;
+      const httpsUrl = `http://localhost:3102${req.originalUrl}`;
       const expectedHttps = generateSignature(
         secretKeyUsed,
         req.method,
@@ -534,10 +534,10 @@ const postJson = (urlString, payload, extraHeaders = {}) => new Promise((resolve
 });
 
 const buildWebhookHeaders = (merchant, payload, webhookUrl) => {
-  const webhookSecret = merchant?.webhook_secret;
-  const apiKey = merchant?.api_key;
+  const webhookSecret = merchant?.webhook_secret || merchant?.secret_key || SECRET_KEY;
+  const apiKey = merchant?.api_key || API_KEY;
 
-  if (!webhookSecret || !apiKey) return {};
+  if (!webhookSecret) return {};
 
   const timestamp = Date.now().toString();
   const payloadString = JSON.stringify(payload);
